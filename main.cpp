@@ -16,6 +16,8 @@ int main(void)
 	RenderTexture camTexture = LoadRenderTexture(cameraX, cameraY);
 
 	Font titleFont = LoadFont("titlefont.fnt");
+	Font scoreFont = LoadFont("fantasque.ttf");
+	Vector2 scoreSize = MeasureTextEx(scoreFont, "00000000000", 32.0, 0.0);
 
 	Vector2 player = {150.0, 200.0}; 
 
@@ -58,10 +60,12 @@ int main(void)
 			DrawTexture(camTexture.texture, padding, padding, WHITE);
 			// Score
 			// TODO: I will use monowide font and scale black box.
-			DrawRectangle(padding * 3 + cameraX, padding * 3,
-					padding * 5, padding, BLACK);
-			DrawText(scoreString, padding * 3 + cameraX, padding * 3,
-					32, WHITE);
+			// DrawRectangle(padding * 3 + cameraX, padding * 3, padding * 5, padding, BLACK);
+			DrawRectangleV((Vector2) {padding * 3 + cameraX, padding * 3},
+					scoreSize, BLACK);
+			DrawTextEx(scoreFont, scoreString, (Vector2) {
+					padding * 3 + cameraX, padding * 3},
+					32.0f, 0.0f, WHITE);
 		}
 		EndDrawing();
 	}
