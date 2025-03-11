@@ -1,5 +1,23 @@
 #include "raylib.h"
 #include <cstdio>
+#include <list>
+
+class PlayerBullet
+{
+private:
+	constexpr float speed = 40.0f;
+	constexpr Vector2 size = {10.0f, 30.0f}; 
+public:
+	Vector2 coords;
+	void Draw()
+	{
+		DrawRectangleV(coords, size, ORANGE);
+	}
+	void Move()
+	{
+		coords.y += speed;
+	}
+};
 
 int main(void)
 {
@@ -19,7 +37,9 @@ int main(void)
 	Font scoreFont = LoadFont("fantasque.ttf");
 	Vector2 scoreSize = MeasureTextEx(scoreFont, "00000000000", 32.0, 0.0);
 
-	Vector2 player = {150.0, 200.0}; 
+	Vector2 player = {150.0, 200.0};
+	std::list<PlayerBullet> playerBullets;
+	float shootCooldown = 0.0f;
 
 	SetTargetFPS(60);
 	while (!WindowShouldClose()) {
@@ -35,7 +55,19 @@ int main(void)
 			player.x += 100.0f * deltaTime;
         	else if (IsKeyDown(KEY_LEFT) && player.x > 0.0f)
 			player.x -= 100.0f * deltaTime;
+		// Shooting. Is limited by arbitrary cooldown.
+		if (IsKeyDown(KEY_Z) && shootCooldown <= 0.0f) {
+			// Limits playe to only 4 shots per second.
+			cooldown = 0.25f;
+			playerBullets.push_back();
+			playerBullets.back().coords = player;
+		}
+		else {
+			if (cooldown > 0.0f) cooldown -= deltaTime;
+		}
 
+		// TODO: Finish!
+		// Moving bullets. They are removed if they move outside window.
 		score++;
 		char scoreString[12];
 		std::snprintf(scoreString, 12, "%011d", score);
@@ -59,8 +91,6 @@ int main(void)
 			// Game screen
 			DrawTexture(camTexture.texture, padding, padding, WHITE);
 			// Score
-			// TODO: I will use monowide font and scale black box.
-			// DrawRectangle(padding * 3 + cameraX, padding * 3, padding * 5, padding, BLACK);
 			DrawRectangleV((Vector2) {padding * 3 + cameraX, padding * 3},
 					scoreSize, BLACK);
 			DrawTextEx(scoreFont, scoreString, (Vector2) {
