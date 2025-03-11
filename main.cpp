@@ -5,8 +5,8 @@
 class PlayerBullet
 {
 private:
-	constexpr float speed = 40.0f;
-	constexpr Vector2 size = {10.0f, 30.0f}; 
+	static constexpr float speed = 10.0f;
+	static constexpr Vector2 size = {10.0f, 30.0f}; 
 public:
 	Vector2 coords;
 	void Draw()
@@ -16,6 +16,10 @@ public:
 	void Move()
 	{
 		coords.y += speed;
+	}
+	PlayerBullet(Vector2 newCoords)
+	{
+		coords = newCoords;
 	}
 };
 
@@ -58,16 +62,21 @@ int main(void)
 		// Shooting. Is limited by arbitrary cooldown.
 		if (IsKeyDown(KEY_Z) && shootCooldown <= 0.0f) {
 			// Limits playe to only 4 shots per second.
-			cooldown = 0.25f;
-			playerBullets.push_back();
-			playerBullets.back().coords = player;
+			shootCooldown = 0.25f;
+			playerBullets.emplace_back(player);
 		}
 		else {
-			if (cooldown > 0.0f) cooldown -= deltaTime;
+			if (shootCooldown > 0.0f) shootCooldown -= deltaTime;
 		}
 
-		// TODO: Finish!
 		// Moving bullets. They are removed if they move outside window.
+		std::list<PlayerBullet>::iterator it;
+		for (it = playerBullets.begin(); it != playerBullets.end(); ) {
+			it->Move();
+			if (it->coords.y > (float) cameraY)
+				playerBullets.erase(it++);
+			else it++;
+		}
 		score++;
 		char scoreString[12];
 		std::snprintf(scoreString, 12, "%011d", score);
@@ -75,7 +84,11 @@ int main(void)
 		{
 			ClearBackground(BLACK);
 			BeginMode2D(camera);
+			// Player
 			DrawCircleV(player, 30.0f, WHITE);
+			// Bullets
+			for (it = playerBullets.begin(); it != playerBullets.end(); ++it)
+				it->Draw();
 			EndMode2D();
 		}
 		EndTextureMode();
