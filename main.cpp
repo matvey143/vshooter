@@ -1,6 +1,7 @@
 #include "raylib.h"
 #include <cstdio>
 #include <list>
+#include <stdint.h>
 
 class PlayerBullet
 {
@@ -25,12 +26,13 @@ public:
 
 int main(void)
 {
-	int score = 10;
+	uint64_t score = 10;
+	constexpr uint64_t MAX_SCORE = 999'999'999'999;
 	InitWindow(640, 480, "vshooter");
 
 	Camera2D camera;
-	camera.target = (Vector2) {0.0, 0.0};
-	camera.offset = (Vector2) {0.0, 0.0};
+	camera.target = {0.0, 0.0};
+	camera.offset = {0.0, 0.0};
 	camera.rotation = 0.0;
 	camera.zoom = 1.0;
 	constexpr int cameraX = 300, cameraY = 400;
@@ -39,7 +41,7 @@ int main(void)
 
 	Font titleFont = LoadFont("titlefont.fnt");
 	Font scoreFont = LoadFont("fantasque.ttf");
-	Vector2 scoreSize = MeasureTextEx(scoreFont, "00000000000", 32.0, 0.0);
+	Vector2 scoreSize = MeasureTextEx(scoreFont, "000000000000", 32.0, 0.0);
 
 	Vector2 player = {150.0, 200.0};
 	std::list<PlayerBullet> playerBullets;
@@ -50,6 +52,7 @@ int main(void)
 		// Time passed between frames.
 		// Can be used to make things more consistant between frames.
 		float deltaTime = GetFrameTime();
+
 		// Player movement, restricted by borders of screen
         	if (IsKeyDown(KEY_UP) && player.y < (float) cameraY)
 			player.y += 100.0f * deltaTime;
@@ -59,10 +62,12 @@ int main(void)
 			player.x += 100.0f * deltaTime;
         	else if (IsKeyDown(KEY_LEFT) && player.x > 0.0f)
 			player.x -= 100.0f * deltaTime;
+
 		// Shooting. Is limited by arbitrary cooldown.
 		if (IsKeyDown(KEY_Z) && shootCooldown <= 0.0f) {
 			// Limits playe to only 4 shots per second.
 			shootCooldown = 0.25f;
+			// TODO: it is slightly off-centered.
 			playerBullets.emplace_back(player);
 		}
 		else {
@@ -77,9 +82,11 @@ int main(void)
 				playerBullets.erase(it++);
 			else it++;
 		}
+
 		score++;
-		char scoreString[12];
-		std::snprintf(scoreString, 12, "%011d", score);
+		char scoreString[13];
+		std::snprintf(scoreString, 13, "%012d", score);
+
 		BeginTextureMode(camTexture);
 		{
 			ClearBackground(BLACK);
@@ -92,6 +99,7 @@ int main(void)
 			EndMode2D();
 		}
 		EndTextureMode();
+
 		BeginDrawing();
 		{
 			ClearBackground(WHITE);
@@ -99,14 +107,14 @@ int main(void)
 			DrawRectangleGradientV(0, 0, 640, 480, RED, PINK);
 			// Title
 			DrawTextEx(titleFont, "VShooter", 
-					(Vector2){padding * 3 + cameraX, padding},
+					{padding * 3 + cameraX, padding},
 					42.0, 0.0, WHITE);
 			// Game screen
 			DrawTexture(camTexture.texture, padding, padding, WHITE);
 			// Score
-			DrawRectangleV((Vector2) {padding * 3 + cameraX, padding * 3},
+			DrawRectangleV({padding * 3 + cameraX, padding * 3},
 					scoreSize, BLACK);
-			DrawTextEx(scoreFont, scoreString, (Vector2) {
+			DrawTextEx(scoreFont, scoreString, {
 					padding * 3 + cameraX, padding * 3},
 					32.0f, 0.0f, WHITE);
 		}
