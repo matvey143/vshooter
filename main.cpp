@@ -26,8 +26,8 @@ public:
 
 int main(void)
 {
-	uint64_t score = 10;
-	constexpr uint64_t MAX_SCORE = 999'999'999'999;
+	uint64_t score = 0;
+	constexpr uint64_t maxScore = 999'999'999'999;
 	InitWindow(640, 480, "vshooter");
 
 	Camera2D camera;
@@ -83,9 +83,9 @@ int main(void)
 			else it++;
 		}
 
-		score++;
+		if (score < maxScore) score++;
 		char scoreString[13];
-		std::snprintf(scoreString, 13, "%012d", score);
+		std::snprintf(scoreString, 13, "%012llu", score);
 
 		BeginTextureMode(camTexture);
 		{
