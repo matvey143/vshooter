@@ -35,7 +35,7 @@ int main(void)
 	camera.offset = {0.0, 0.0};
 	camera.rotation = 0.0;
 	camera.zoom = 1.0;
-	constexpr int cameraX = 300, cameraY = 400;
+	constexpr auto cameraX = 300, cameraY = 400;
 	constexpr int padding = 40;
 	RenderTexture camTexture = LoadRenderTexture(cameraX, cameraY);
 
@@ -54,11 +54,11 @@ int main(void)
 		float deltaTime = GetFrameTime();
 
 		// Player movement, restricted by borders of screen
-        	if (IsKeyDown(KEY_UP) && player.y < (float) cameraY)
+        	if (IsKeyDown(KEY_UP) && player.y < cameraY)
 			player.y += 100.0f * deltaTime;
         	else if (IsKeyDown(KEY_DOWN) && player.y > 0.0f)
 			player.y -= 100.0f * deltaTime;
-        	if (IsKeyDown(KEY_RIGHT) && player.x < (float) cameraX)
+        	if (IsKeyDown(KEY_RIGHT) && player.x < cameraX)
 			player.x += 100.0f * deltaTime;
         	else if (IsKeyDown(KEY_LEFT) && player.x > 0.0f)
 			player.x -= 100.0f * deltaTime;
@@ -78,7 +78,7 @@ int main(void)
 		std::list<PlayerBullet>::iterator it;
 		for (it = playerBullets.begin(); it != playerBullets.end(); ) {
 			it->Move();
-			if (it->coords.y > (float) cameraY)
+			if (it->coords.y > cameraY)
 				playerBullets.erase(it++);
 			else it++;
 		}
