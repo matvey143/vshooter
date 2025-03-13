@@ -54,13 +54,13 @@ int main(void)
 		float deltaTime = GetFrameTime();
 
 		// Player movement, restricted by borders of screen
-        	if (IsKeyDown(KEY_UP) && player.y < cameraY)
+		if (IsKeyDown(KEY_UP) && player.y < cameraY)
 			player.y += 100.0f * deltaTime;
-        	else if (IsKeyDown(KEY_DOWN) && player.y > 0.0f)
+		else if (IsKeyDown(KEY_DOWN) && player.y > 0.0f)
 			player.y -= 100.0f * deltaTime;
-        	if (IsKeyDown(KEY_RIGHT) && player.x < cameraX)
+		if (IsKeyDown(KEY_RIGHT) && player.x < cameraX)
 			player.x += 100.0f * deltaTime;
-        	else if (IsKeyDown(KEY_LEFT) && player.x > 0.0f)
+		else if (IsKeyDown(KEY_LEFT) && player.x > 0.0f)
 			player.x -= 100.0f * deltaTime;
 
 		// Shooting. Is limited by arbitrary cooldown.
