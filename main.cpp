@@ -106,17 +106,14 @@ int main(void)
 			// Background
 			DrawRectangleGradientV(0, 0, 640, 480, RED, PINK);
 			// Title
-			DrawTextEx(titleFont, "VShooter", 
-					{padding * 3 + cameraX, padding},
-					42.0, 0.0, WHITE);
+			DrawTextEx(titleFont, "VShooter", {padding * 3 + cameraX, padding}, 42.0, 0.0, WHITE);
 			// Game screen
 			DrawTexture(camTexture.texture, padding, padding, WHITE);
 			// Score
-			DrawRectangleV({padding * 3 + cameraX, padding * 3},
-					scoreSize, BLACK);
-			DrawTextEx(scoreFont, scoreString, {
-					padding * 3 + cameraX, padding * 3},
-					32.0f, 0.0f, WHITE);
+			constexpr float xScorePadding = padding * 3 + cameraX;
+			constexpr float yScorePadding = padding * 3;
+			DrawRectangleV({xScorePadding, yScorePadding}, scoreSize, BLACK);
+			DrawTextEx(scoreFont, scoreString, {xScorePadding, yScorePadding}, 32.0f, 0.0f, WHITE);
 		}
 		EndDrawing();
 	}
