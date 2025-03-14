@@ -3,8 +3,7 @@
 #include <list>
 #include <stdint.h>
 
-class PlayerBullet
-{
+class PlayerBullet {
 private:
 	static constexpr float speed = 10.0f;
 	static constexpr Vector2 size = {10.0f, 30.0f}; 
@@ -22,6 +21,23 @@ public:
 	{
 		coords = newCoords;
 		coords.x -= size.x / 2.0f;
+	}
+};
+
+enum PlayerFrame {
+	PLAYER_FRAME_NORMAL_1 = 0,
+	PLAYER_FRAME_NORMAL_2 = 1
+};
+
+class Player {
+private:
+	enum PlayerFrame currentFrame = PLAYER_FRAME_NORMAL_1;
+public:
+	Vector2 coords;
+	void Draw(Texture2D *sprites)
+	{
+		DrawTexture(sprites[currentFrame], coords.x, coords.y, WHITE);
+		// In future here will be drawing of hitbox if debug is enabled.
 	}
 };
 
@@ -44,9 +60,11 @@ int main(void)
 	Font scoreFont = LoadFont("fantasque.ttf");
 	Vector2 scoreSize = MeasureTextEx(scoreFont, "000000000000", 32.0, 0.0);
 
-	Vector2 player = {150.0, 200.0};
+	Player player;
+	player.coords = {150.0, 200.0};
 	std::list<PlayerBullet> playerBullets;
 	float shootCooldown = 0.0f;
+	Texture2D playerSprites[] = {LoadTexture("player-1.png"), LoadTexture("player-2.png")};
 
 	SetTargetFPS(60);
 	while (!WindowShouldClose()) {
@@ -55,21 +73,21 @@ int main(void)
 		float deltaTime = GetFrameTime();
 
 		// Player movement, restricted by borders of screen
-		if (IsKeyDown(KEY_UP) && player.y < cameraY)
-			player.y += 100.0f * deltaTime;
-		else if (IsKeyDown(KEY_DOWN) && player.y > 0.0f)
-			player.y -= 100.0f * deltaTime;
-		if (IsKeyDown(KEY_RIGHT) && player.x < cameraX)
-			player.x += 100.0f * deltaTime;
-		else if (IsKeyDown(KEY_LEFT) && player.x > 0.0f)
-			player.x -= 100.0f * deltaTime;
+		if (IsKeyDown(KEY_UP) && player.coords.y < cameraY)
+			player.coords.y += 100.0f * deltaTime;
+		else if (IsKeyDown(KEY_DOWN) && player.coords.y > 0.0f)
+			player.coords.y -= 100.0f * deltaTime;
+		if (IsKeyDown(KEY_RIGHT) && player.coords.x < cameraX)
+			player.coords.x += 100.0f * deltaTime;
+		else if (IsKeyDown(KEY_LEFT) && player.coords.x > 0.0f)
+			player.coords.x -= 100.0f * deltaTime;
 
 		// Shooting. Is limited by arbitrary cooldown.
 		if (IsKeyDown(KEY_Z) && shootCooldown <= 0.0f) {
 			// Limits playe to only 4 shots per second.
 			shootCooldown = 0.25f;
 			// Construct class member at the end of list.
-			playerBullets.emplace_back(player);
+			playerBullets.emplace_back(player.coords);
 		}
 		else {
 			if (shootCooldown > 0.0f) shootCooldown -= deltaTime;
@@ -90,13 +108,16 @@ int main(void)
 
 		BeginTextureMode(camTexture);
 		{
-			ClearBackground(BLACK);
+			// It should be like a pretty dark shade of blue.
+			ClearBackground({6, 6, 61, 255});
 			BeginMode2D(camera);
 			// Player
-			DrawCircleV(player, 30.0f, WHITE);
+			// DrawCircleV(player.coords, 30.0f, WHITE);
+			player.Draw(playerSprites);
 			// Bullets
 			for (it = playerBullets.begin(); it != playerBullets.end(); ++it)
 				it->Draw();
+			// TODO: In future here will be stars.
 			EndMode2D();
 		}
 		EndTextureMode();
@@ -118,6 +139,9 @@ int main(void)
 		}
 		EndDrawing();
 	}
+	// TODO: Replace with loop
+	/* UnloadTexture(playerSprite1);
+	UnloadTexture(playerSprite2); */
 	UnloadRenderTexture(camTexture);
 	CloseWindow();
 	return 0;
