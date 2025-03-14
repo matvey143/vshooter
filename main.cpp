@@ -21,6 +21,7 @@ public:
 	PlayerBullet(Vector2 newCoords)
 	{
 		coords = newCoords;
+		coords.x -= size.x / 2.0f;
 	}
 };
 
@@ -67,7 +68,7 @@ int main(void)
 		if (IsKeyDown(KEY_Z) && shootCooldown <= 0.0f) {
 			// Limits playe to only 4 shots per second.
 			shootCooldown = 0.25f;
-			// TODO: it is slightly off-centered.
+			// Construct class member at the end of list.
 			playerBullets.emplace_back(player);
 		}
 		else {
