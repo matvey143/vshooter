@@ -7,7 +7,7 @@ constexpr auto cameraX = 300, cameraY = 400;
 
 class PlayerBullet {
 private:
-	static constexpr float speed = 10.0f;
+	static constexpr float speed = 1000.0f;
 	static constexpr Vector2 size = {4.0f, 12.0f};
 public:
 	Vector2 coords;
@@ -15,9 +15,9 @@ public:
 	{
 		DrawRectangleV(coords, size, ORANGE);
 	}
-	void Move()
+	void Move(float deltaTime)
 	{
-		coords.y += speed;
+		coords.y += speed * deltaTime;
 	}
 	PlayerBullet(Vector2 newCoords)
 	{
@@ -36,8 +36,10 @@ private:
 	enum PlayerFrame currentFrame = PLAYER_FRAME_NORMAL_1;
 	Rectangle hitbox = {0.0f, 0.0f, 6.0f, 10.0f};
 	float spriteTime = 0.00f;
+	float shootCooldown = 0.0f;
 public:
 	Vector2 coords;
+	std::list<PlayerBullet> playerBullets;
 	void Draw(Texture2D *sprites)
 	{
 		DrawTexture(sprites[currentFrame], coords.x, coords.y, WHITE);
@@ -63,18 +65,46 @@ public:
 	{
 		float speed = 100.0f;
 		if (IsKeyDown(KEY_UP) && (hitbox.y + hitbox.height) < cameraY)
-			coords.y += 100.0f * deltaTime;
+			coords.y += speed * deltaTime;
 		else if (IsKeyDown(KEY_DOWN) && hitbox.y > 0.0f)
-			coords.y -= 100.0f * deltaTime;
+			coords.y -= speed * deltaTime;
 		if (IsKeyDown(KEY_RIGHT) && (hitbox.x + hitbox.width) < cameraX)
-			coords.x += 100.0f * deltaTime;
+			coords.x += speed * deltaTime;
 		else if (IsKeyDown(KEY_LEFT) && hitbox.x > 0.0f)
-			coords.x -= 100.0f * deltaTime;
+			coords.x -= speed * deltaTime;
 
 		// Hitbox is realigned after movement.
 		constexpr float xOffset = 13.0, yOffset = 12.0f;
 		hitbox.x = coords.x + xOffset;
 		hitbox.y = coords.y + yOffset; 
+	}
+	void Fire(float deltaTime)
+	{
+		if (IsKeyDown(KEY_Z) && shootCooldown <= 0.0f) {
+			// Limits playe to only 4 shots per second.
+			shootCooldown = 0.25f;
+			// Construct class member at the end of list.
+			playerBullets.emplace_back((Vector2) {hitbox.x + (hitbox.width / 2.0f), hitbox.y});
+		}
+		else {
+			if (shootCooldown > 0.0f) shootCooldown -= deltaTime;
+		}
+	}
+	void MoveAllBullets(float deltaTime)
+	{
+		std::list<PlayerBullet>::iterator it;
+		for (it = playerBullets.begin(); it != playerBullets.end(); ) {
+			it->Move(deltaTime);
+			if (it->coords.y > cameraY)
+				playerBullets.erase(it++);
+			else it++;
+		}
+	}
+	void DrawAllBullets()
+	{
+		std::list<PlayerBullet>::iterator it;
+		for (it = playerBullets.begin(); it != playerBullets.end(); ++it)
+			it->Draw();
 	}
 };
 
@@ -99,7 +129,6 @@ int main(void)
 
 	Player player;
 	player.coords = {150.0, 200.0};
-	std::list<PlayerBullet> playerBullets;
 	float shootCooldown = 0.0f;
 	Texture2D playerSprites[] = {LoadTexture("player-1.png"), LoadTexture("player-2.png")};
 
@@ -112,25 +141,9 @@ int main(void)
 		// Player movement, restricted by borders of screen
 		player.Move(deltaTime);
 
-		// Shooting. Is limited by arbitrary cooldown.
-		if (IsKeyDown(KEY_Z) && shootCooldown <= 0.0f) {
-			// Limits playe to only 4 shots per second.
-			shootCooldown = 0.25f;
-			// Construct class member at the end of list.
-			playerBullets.emplace_back(player.coords);
-		}
-		else {
-			if (shootCooldown > 0.0f) shootCooldown -= deltaTime;
-		}
-
+		player.Fire(deltaTime);
 		// Moving bullets. They are removed if they move outside window.
-		std::list<PlayerBullet>::iterator it;
-		for (it = playerBullets.begin(); it != playerBullets.end(); ) {
-			it->Move();
-			if (it->coords.y > cameraY)
-				playerBullets.erase(it++);
-			else it++;
-		}
+		player.MoveAllBullets(deltaTime);		
 
 		if (score < maxScore) score++;
 		char scoreString[13];
@@ -145,8 +158,7 @@ int main(void)
 			// DrawCircleV(player.coords, 30.0f, WHITE);
 			player.Draw(playerSprites);
 			// Bullets
-			for (it = playerBullets.begin(); it != playerBullets.end(); ++it)
-				it->Draw();
+			player.DrawAllBullets();
 			// TODO: In future here will be stars.
 			EndMode2D();
 		}
