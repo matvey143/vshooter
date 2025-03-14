@@ -3,10 +3,12 @@
 #include <list>
 #include <stdint.h>
 
+constexpr auto cameraX = 300, cameraY = 400;
+
 class PlayerBullet {
 private:
 	static constexpr float speed = 10.0f;
-	static constexpr Vector2 size = {10.0f, 30.0f}; 
+	static constexpr Vector2 size = {4.0f, 12.0f};
 public:
 	Vector2 coords;
 	void Draw()
@@ -32,12 +34,47 @@ enum PlayerFrame {
 class Player {
 private:
 	enum PlayerFrame currentFrame = PLAYER_FRAME_NORMAL_1;
+	Rectangle hitbox = {0.0f, 0.0f, 6.0f, 10.0f};
+	float spriteTime = 0.00f;
 public:
 	Vector2 coords;
 	void Draw(Texture2D *sprites)
 	{
 		DrawTexture(sprites[currentFrame], coords.x, coords.y, WHITE);
 		// In future here will be drawing of hitbox if debug is enabled.
+		#ifdef DEBUG
+		DrawRectangleRec(hitbox, {255, 0, 0, 128});
+		#endif
+	}
+	void ChangeSprite(float deltaTime)
+	{
+		constexpr static float changeTime = 1.0 / (sizeof (PlayerFrame) / sizeof PLAYER_FRAME_NORMAL_1) / 2.0f;
+		spriteTime += deltaTime;
+		if (spriteTime >= changeTime)
+		{
+			spriteTime = 0.0f;
+			if (currentFrame == PLAYER_FRAME_NORMAL_1)
+				currentFrame = PLAYER_FRAME_NORMAL_2;
+			else if (currentFrame == PLAYER_FRAME_NORMAL_2)
+				currentFrame = PLAYER_FRAME_NORMAL_1;
+		}
+	}
+	void Move(float deltaTime)
+	{
+		float speed = 100.0f;
+		if (IsKeyDown(KEY_UP) && (hitbox.y + hitbox.height) < cameraY)
+			coords.y += 100.0f * deltaTime;
+		else if (IsKeyDown(KEY_DOWN) && hitbox.y > 0.0f)
+			coords.y -= 100.0f * deltaTime;
+		if (IsKeyDown(KEY_RIGHT) && (hitbox.x + hitbox.width) < cameraX)
+			coords.x += 100.0f * deltaTime;
+		else if (IsKeyDown(KEY_LEFT) && hitbox.x > 0.0f)
+			coords.x -= 100.0f * deltaTime;
+
+		// Hitbox is realigned after movement.
+		constexpr float xOffset = 13.0, yOffset = 12.0f;
+		hitbox.x = coords.x + xOffset;
+		hitbox.y = coords.y + yOffset; 
 	}
 };
 
@@ -52,7 +89,7 @@ int main(void)
 	camera.offset = {0.0, 0.0};
 	camera.rotation = 0.0;
 	camera.zoom = 1.0;
-	constexpr auto cameraX = 300, cameraY = 400;
+
 	constexpr int padding = 40;
 	RenderTexture camTexture = LoadRenderTexture(cameraX, cameraY);
 
@@ -71,16 +108,9 @@ int main(void)
 		// Time passed between frames.
 		// Can be used to make things more consistant between frames.
 		float deltaTime = GetFrameTime();
-
+		player.ChangeSprite(deltaTime);
 		// Player movement, restricted by borders of screen
-		if (IsKeyDown(KEY_UP) && player.coords.y < cameraY)
-			player.coords.y += 100.0f * deltaTime;
-		else if (IsKeyDown(KEY_DOWN) && player.coords.y > 0.0f)
-			player.coords.y -= 100.0f * deltaTime;
-		if (IsKeyDown(KEY_RIGHT) && player.coords.x < cameraX)
-			player.coords.x += 100.0f * deltaTime;
-		else if (IsKeyDown(KEY_LEFT) && player.coords.x > 0.0f)
-			player.coords.x -= 100.0f * deltaTime;
+		player.Move(deltaTime);
 
 		// Shooting. Is limited by arbitrary cooldown.
 		if (IsKeyDown(KEY_Z) && shootCooldown <= 0.0f) {
