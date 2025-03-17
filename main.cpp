@@ -5,6 +5,7 @@
 #include <random>
 
 constexpr auto cameraX = 300, cameraY = 400;
+constexpr Color hitboxColor = {255, 0, 0, 128};
 
 std::random_device randDevice;
 std::mt19937 rng(randDevice());
@@ -33,11 +34,6 @@ public:
 	}
 };
 
-enum PlayerFrame {
-	PLAYER_FRAME_NORMAL_1 = 0,
-	PLAYER_FRAME_NORMAL_2 = 1
-};
-
 class BgStar {
 private:
 	Color bgColor;
@@ -64,11 +60,58 @@ public:
 	}
 };
 
+enum EnemyFrameUFO {
+	UFO_FRAME_NORMAL_1 = 0,
+	UFO_FRAME_NORMAL_2 = 1
+};
+
+class EnemyUFO {
+private:
+	enum EnemyFrameUFO currentFrame = UFO_FRAME_NORMAL_1;
+	Rectangle hitbox = {0.0f, 0.0f, 28.0f, 15.0f};
+	float spriteTime = 0.0f;
+	float shootCooldown = 0.0f;
+public:
+	Vector2 coords;
+	void Draw(Texture2D *sprites)
+	{
+		DrawTexture(sprites[currentFrame], coords.x, coords.y, WHITE);
+		#ifdef DEBUG
+		DrawRectangleRec(hitbox, hitboxColor);
+		#endif
+	}
+	void ChangeSprite(float deltaTime)
+	{
+		constexpr static float changeTime = 1.0f / (sizeof (EnemyFrameUFO) / sizeof UFO_FRAME_NORMAL_1) / 2.0f;
+		spriteTime += deltaTime;
+		if (spriteTime >= changeTime) {
+			if (currentFrame == UFO_FRAME_NORMAL_1)
+				currentFrame = UFO_FRAME_NORMAL_2;
+			else if (currentFrame == UFO_FRAME_NORMAL_2)
+				currentFrame = UFO_FRAME_NORMAL_1;
+			spriteTime = 0.0f;
+		}
+	}
+	// Only here to realign hitbox for now.
+	void Move()
+	{
+		// Hitbox is realigned after movement.
+		constexpr float xOffset = 2.0, yOffset = 0.0f;
+		hitbox.x = coords.x + xOffset;
+		hitbox.y = coords.y + yOffset; 
+	}
+};
+
+enum PlayerFrame {
+	PLAYER_FRAME_NORMAL_1 = 0,
+	PLAYER_FRAME_NORMAL_2 = 1
+};
+
 class Player {
 private:
 	enum PlayerFrame currentFrame = PLAYER_FRAME_NORMAL_1;
 	Rectangle hitbox = {0.0f, 0.0f, 6.0f, 10.0f};
-	float spriteTime = 0.00f;
+	float spriteTime = 0.0f;
 	float shootCooldown = 0.0f;
 public:
 	Vector2 coords;
@@ -78,15 +121,14 @@ public:
 		DrawTexture(sprites[currentFrame], coords.x, coords.y, WHITE);
 		// In future here will be drawing of hitbox if debug is enabled.
 		#ifdef DEBUG
-		DrawRectangleRec(hitbox, {255, 0, 0, 128});
+		DrawRectangleRec(hitbox, hitboxColor);
 		#endif
 	}
 	void ChangeSprite(float deltaTime)
 	{
 		constexpr static float changeTime = 1.0 / (sizeof (PlayerFrame) / sizeof PLAYER_FRAME_NORMAL_1) / 2.0f;
 		spriteTime += deltaTime;
-		if (spriteTime >= changeTime)
-		{
+		if (spriteTime >= changeTime) {
 			spriteTime = 0.0f;
 			if (currentFrame == PLAYER_FRAME_NORMAL_1)
 				currentFrame = PLAYER_FRAME_NORMAL_2;
@@ -168,6 +210,10 @@ int main(void)
 	float bgStarCooldown = 0.0f;
 	std::list<BgStar> stars;
 
+	Texture2D ufoEnemySprites[] = {LoadTexture("ufo-normal1.png"), LoadTexture("ufo-normal2.png")};
+	EnemyUFO exampleUFO;
+	exampleUFO.coords = {100.0f, 100.0f};
+
 	SetTargetFPS(60);
 	while (!WindowShouldClose()) {
 		// Time passed between frames.
@@ -179,6 +225,9 @@ int main(void)
 		player.Fire(deltaTime);
 		// Moving bullets. They are removed if they move outside window.
 		player.MoveAllBullets(deltaTime);
+
+		exampleUFO.Move();
+		exampleUFO.ChangeSprite(deltaTime);
 
 		if (bgStarCooldown >= 0.5f) {
 			stars.emplace_back();
@@ -206,6 +255,7 @@ int main(void)
 				it->Draw();
 			// Player
 			player.Draw(playerSprites);
+			exampleUFO.Draw(ufoEnemySprites);
 			// Bullets
 			player.DrawAllBullets();
 			EndMode2D();
