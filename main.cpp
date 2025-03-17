@@ -199,7 +199,8 @@ int main(void)
 	RenderTexture camTexture = LoadRenderTexture(cameraX, cameraY);
 
 	Font titleFont = LoadFont("titlefont.fnt");
-	Font scoreFont = LoadFont("fantasque.ttf");
+	//Font scoreFont = LoadFont("fantasque.ttf");
+	Font scoreFont = LoadFontEx("fantasque.ttf", 32, NULL, 0xFFFF);
 	Vector2 scoreSize = MeasureTextEx(scoreFont, "000000000000", 32.0, 0.0);
 
 	Player player;
@@ -274,6 +275,7 @@ int main(void)
 			// Score
 			constexpr float xScorePadding = padding * 3 + cameraX;
 			constexpr float yScorePadding = padding * 3;
+			DrawTextEx(scoreFont, u8"Очки", {xScorePadding, yScorePadding - padding}, 32.0f, 0.0f, WHITE);
 			DrawRectangleV({xScorePadding, yScorePadding}, scoreSize, BLACK);
 			DrawTextEx(scoreFont, scoreString, {xScorePadding, yScorePadding}, 32.0f, 0.0f, WHITE);
 		}
