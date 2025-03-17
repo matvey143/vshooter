@@ -2,8 +2,15 @@
 #include <cstdio>
 #include <list>
 #include <stdint.h>
+#include <random>
 
 constexpr auto cameraX = 300, cameraY = 400;
+
+std::random_device randDevice;
+std::mt19937 rng(randDevice());
+std::uniform_int_distribution<unsigned char> randomColor(0, 0xFF);
+std::uniform_real_distribution<float> randomX(0.0f, cameraX);
+std::uniform_real_distribution<float> randomStarSpeed(5.0f, 10.0f);
 
 class PlayerBullet {
 private:
@@ -29,6 +36,32 @@ public:
 enum PlayerFrame {
 	PLAYER_FRAME_NORMAL_1 = 0,
 	PLAYER_FRAME_NORMAL_2 = 1
+};
+
+class BgStar {
+private:
+	Color bgColor;
+	float speed;
+public:
+	Vector2 coords;
+	BgStar()
+	{
+		bgColor.r = randomColor(rng);
+		bgColor.g = randomColor(rng);
+		bgColor.b = randomColor(rng);
+		bgColor.a = 0xFF;
+		coords.y = cameraY;
+		coords.x = randomX(rng);
+		speed = randomStarSpeed(rng);
+	}
+	void Move(float deltaTime)
+	{
+		coords.y -= speed * deltaTime;
+	}
+	void Draw()
+	{
+		DrawPixelV(coords, bgColor);
+	}
 };
 
 class Player {
@@ -132,6 +165,9 @@ int main(void)
 	float shootCooldown = 0.0f;
 	Texture2D playerSprites[] = {LoadTexture("player-1.png"), LoadTexture("player-2.png")};
 
+	float bgStarCooldown = 0.0f;
+	std::list<BgStar> stars;
+
 	SetTargetFPS(60);
 	while (!WindowShouldClose()) {
 		// Time passed between frames.
@@ -140,10 +176,22 @@ int main(void)
 		player.ChangeSprite(deltaTime);
 		// Player movement, restricted by borders of screen
 		player.Move(deltaTime);
-
 		player.Fire(deltaTime);
 		// Moving bullets. They are removed if they move outside window.
-		player.MoveAllBullets(deltaTime);		
+		player.MoveAllBullets(deltaTime);
+
+		if (bgStarCooldown >= 0.5f) {
+			stars.emplace_back();
+			bgStarCooldown = 0.0f;
+		}
+		else bgStarCooldown += deltaTime;
+		std::list<BgStar>::iterator it;
+		for (it = stars.begin(); it != stars.end(); ) {
+			it->Move(deltaTime);
+			if (it->coords.y <= 0.0f)
+				stars.erase(it++);
+			else it++;
+		}
 
 		if (score < maxScore) score++;
 		char scoreString[13];
@@ -154,12 +202,12 @@ int main(void)
 			// It should be like a pretty dark shade of blue.
 			ClearBackground({6, 6, 61, 255});
 			BeginMode2D(camera);
+			for (it = stars.begin(); it != stars.end(); ++it)
+				it->Draw();
 			// Player
-			// DrawCircleV(player.coords, 30.0f, WHITE);
 			player.Draw(playerSprites);
 			// Bullets
 			player.DrawAllBullets();
-			// TODO: In future here will be stars.
 			EndMode2D();
 		}
 		EndTextureMode();
