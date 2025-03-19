@@ -216,12 +216,6 @@ public:
 	}
 };
 
-/*
- * There is a pretty nasty bug with UFO bullets.
- * Program works fine for a half of second and then freezes.
- * I suspect some messed-up loop is a culprit.
-*/
-
 int main(void)
 {
 	uint64_t score = 0;
@@ -309,7 +303,7 @@ int main(void)
 			// Player's bullets
 			player.DrawAllBullets();
 			// TODO: Enemy's bullets
-			for (ebullets_it = enemyBullets.begin(); ebullets_it != enemyBullets.end(); ++it)
+			for (ebullets_it = enemyBullets.begin(); ebullets_it != enemyBullets.end(); ebullets_it++)
 				ebullets_it->Draw();
 			EndMode2D();
 		}
