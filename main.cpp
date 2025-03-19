@@ -34,6 +34,29 @@ public:
 	}
 };
 
+class EnemyBullet {
+private:
+	float speed = 1000.0f;
+	Color color = GREEN;
+public:
+	Vector2 size = {4.0f, 12.0f};
+	Vector2 coords;
+	void Draw()
+	{
+		DrawRectangleV(coords, size, GREEN);
+	}
+	void Move(float deltaTime)
+	{
+		coords.y -= speed * deltaTime;
+	}
+	EnemyBullet(Vector2 newCoords)
+	{
+		coords = newCoords;
+	}
+	// Might add variants for different speeds and bullet sizes.
+};
+std::list<EnemyBullet> enemyBullets;
+
 class BgStar {
 private:
 	Color bgColor;
@@ -70,7 +93,8 @@ private:
 	enum EnemyFrameUFO currentFrame = UFO_FRAME_NORMAL_1;
 	Rectangle hitbox = {0.0f, 0.0f, 28.0f, 15.0f};
 	float spriteTime = 0.0f;
-	float shootCooldown = 0.0f;
+	float shootTimer = 0.0f;
+	float shootCooldown = 0.5f;
 public:
 	Vector2 coords;
 	void Draw(Texture2D *sprites)
@@ -92,7 +116,16 @@ public:
 			spriteTime = 0.0f;
 		}
 	}
+	void Shoot(float deltaTime)
+	{
+		if (shootTimer >= shootCooldown) {
+			shootTimer = 0.0f;
+			enemyBullets.emplace_back(coords);
+		}
+		else shootTimer += deltaTime;
+	}
 	// Only here to realign hitbox for now.
+	// TODO: Make UFO move in zigzags.
 	void Move()
 	{
 		// Hitbox is realigned after movement.
@@ -229,6 +262,7 @@ int main(void)
 		player.MoveAllBullets(deltaTime);
 
 		exampleUFO.Move();
+		exampleUFO.Shoot(deltaTime);
 		exampleUFO.ChangeSprite(deltaTime);
 
 		if (bgStarCooldown >= 0.5f) {
@@ -242,6 +276,13 @@ int main(void)
 			if (it->coords.y <= 0.0f)
 				stars.erase(it++);
 			else it++;
+		}
+		std::list<EnemyBullet>::iterator ebullets_it;
+		for (ebullets_it = enemyBullets.begin(); ebullets_it != enemyBullets.end(); ) {
+			ebullets_it->Move(deltaTime);
+			if (ebullets_it->coords.y <= 0.0f)
+				enemyBullets.erase(ebullets_it++);
+			else ebullets_it++;			
 		}
 
 		if (score < maxScore) score++;
@@ -257,9 +298,13 @@ int main(void)
 				it->Draw();
 			// Player
 			player.Draw(playerSprites);
+			// UFO
 			exampleUFO.Draw(ufoEnemySprites);
-			// Bullets
+			// Player's bullets
 			player.DrawAllBullets();
+			// TODO: Enemy's bullets
+			for (ebullets_it = enemyBullets.begin(); ebullets_it != enemyBullets.end(); ++it)
+				ebullets_it->Draw();
 			EndMode2D();
 		}
 		EndTextureMode();
