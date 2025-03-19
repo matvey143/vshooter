@@ -36,7 +36,7 @@ public:
 
 class EnemyBullet {
 private:
-	float speed = 1000.0f;
+	float speed = 250.0f;
 	Color color = GREEN;
 public:
 	Vector2 size = {4.0f, 12.0f};
@@ -93,7 +93,7 @@ private:
 	enum EnemyFrameUFO currentFrame = UFO_FRAME_NORMAL_1;
 	Rectangle hitbox = {0.0f, 0.0f, 28.0f, 15.0f};
 	float spriteTime = 0.0f;
-	float shootTimer = 0.0f;
+	float shootTime = 0.0f;
 	float shootCooldown = 0.5f;
 public:
 	Vector2 coords;
@@ -118,11 +118,11 @@ public:
 	}
 	void Shoot(float deltaTime)
 	{
-		if (shootTimer >= shootCooldown) {
-			shootTimer = 0.0f;
-			enemyBullets.emplace_back(coords);
+		if (shootTime >= shootCooldown) {
+			shootTime = 0.0f;
+			enemyBullets.emplace_back((Vector2){coords.x + hitbox.width / 2.0f, coords.y});
 		}
-		else shootTimer += deltaTime;
+		else shootTime += deltaTime;
 	}
 	// Only here to realign hitbox for now.
 	// TODO: Make UFO move in zigzags.
@@ -280,7 +280,7 @@ int main(void)
 		std::list<EnemyBullet>::iterator ebullets_it;
 		for (ebullets_it = enemyBullets.begin(); ebullets_it != enemyBullets.end(); ) {
 			ebullets_it->Move(deltaTime);
-			if (ebullets_it->coords.y <= 0.0f)
+			if (ebullets_it->coords.y + ebullets_it->size.y <= 0.0f)
 				enemyBullets.erase(ebullets_it++);
 			else ebullets_it++;
 		}
