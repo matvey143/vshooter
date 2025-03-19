@@ -207,6 +207,7 @@ int main(void)
 	player.coords = {150.0, 200.0};
 	float shootCooldown = 0.0f;
 	Texture2D playerSprites[] = {LoadTexture("player-1.png"), LoadTexture("player-2.png")};
+	int lives = 5;
 
 	float bgStarCooldown = 0.0f;
 	std::list<BgStar> stars;
@@ -278,6 +279,10 @@ int main(void)
 			DrawTextEx(scoreFont, u8"Очки", {xScorePadding, yScorePadding - padding}, 32.0f, 0.0f, WHITE);
 			DrawRectangleV({xScorePadding, yScorePadding}, scoreSize, BLACK);
 			DrawTextEx(scoreFont, scoreString, {xScorePadding, yScorePadding}, 32.0f, 0.0f, WHITE);
+			// Lives
+			DrawTextEx(scoreFont, u8"Жизни", {xScorePadding, padding * 4}, 32.0f, 0.0f, WHITE);
+			for (int i = 0; i < lives; i++)
+				DrawTexture(playerSprites[0], xScorePadding + padding * i, padding * 5, WHITE);
 		}
 		EndDrawing();
 	}
