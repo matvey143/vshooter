@@ -216,6 +216,12 @@ public:
 	}
 };
 
+/*
+ * There is a pretty nasty bug with UFO bullets.
+ * Program works fine for a half of second and then freezes.
+ * I suspect some messed-up loop is a culprit.
+*/
+
 int main(void)
 {
 	uint64_t score = 0;
@@ -282,7 +288,7 @@ int main(void)
 			ebullets_it->Move(deltaTime);
 			if (ebullets_it->coords.y <= 0.0f)
 				enemyBullets.erase(ebullets_it++);
-			else ebullets_it++;			
+			else ebullets_it++;
 		}
 
 		if (score < maxScore) score++;
