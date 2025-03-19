@@ -95,6 +95,10 @@ private:
 	float spriteTime = 0.0f;
 	float shootTime = 0.0f;
 	float shootCooldown = 0.5f;
+	float moveTime = 0.0f;
+	float moveCooldown = 1.0f;
+	float speed = 100.0f;
+	bool movesRight = false;
 public:
 	Vector2 coords;
 	void Draw(Texture2D *sprites)
@@ -126,8 +130,16 @@ public:
 	}
 	// Only here to realign hitbox for now.
 	// TODO: Make UFO move in zigzags.
-	void Move()
+	void Move(float deltaTime)
 	{
+		coords.y -= speed * deltaTime;
+		if (movesRight) coords.x += speed * deltaTime; 
+		else coords.x -= speed * deltaTime;
+		moveTime += deltaTime;
+		if (moveCooldown <= moveTime) {
+			moveTime = 0.0f;
+			movesRight = !movesRight;
+		}
 		// Hitbox is realigned after movement.
 		constexpr float xOffset = 2.0, yOffset = 0.0f;
 		hitbox.x = coords.x + xOffset;
@@ -247,7 +259,7 @@ int main(void)
 
 	Texture2D ufoEnemySprites[] = {LoadTexture("ufo-normal1.png"), LoadTexture("ufo-normal2.png")};
 	EnemyUFO exampleUFO;
-	exampleUFO.coords = {100.0f, 100.0f};
+	exampleUFO.coords = {100.0f, cameraY};
 
 	SetTargetFPS(60);
 	while (!WindowShouldClose()) {
@@ -261,7 +273,7 @@ int main(void)
 		// Moving bullets. They are removed if they move outside window.
 		player.MoveAllBullets(deltaTime);
 
-		exampleUFO.Move();
+		exampleUFO.Move(deltaTime);
 		exampleUFO.Shoot(deltaTime);
 		exampleUFO.ChangeSprite(deltaTime);
 
