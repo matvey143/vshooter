@@ -129,7 +129,6 @@ public:
 		else shootTime += deltaTime;
 	}
 	// Only here to realign hitbox for now.
-	// TODO: Make UFO move in zigzags.
 	void Move(float deltaTime)
 	{
 		coords.y -= speed * deltaTime;
@@ -164,7 +163,6 @@ public:
 	void Draw(Texture2D *sprites)
 	{
 		DrawTexture(sprites[currentFrame], coords.x, coords.y, WHITE);
-		// In future here will be drawing of hitbox if debug is enabled.
 		#ifdef DEBUG
 		DrawRectangleRec(hitbox, hitboxColor);
 		#endif
@@ -314,7 +312,7 @@ int main(void)
 			exampleUFO.Draw(ufoEnemySprites);
 			// Player's bullets
 			player.DrawAllBullets();
-			// TODO: Enemy's bullets
+			// Enemy's bullets
 			for (ebullets_it = enemyBullets.begin(); ebullets_it != enemyBullets.end(); ebullets_it++)
 				ebullets_it->Draw();
 			EndMode2D();
