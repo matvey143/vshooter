@@ -280,7 +280,7 @@ public:
 	void Hit()
 	{
 		lives--;
-		isHit = true; 
+		isHit = true;
 	}
 };
 
