@@ -6,6 +6,7 @@
 
 constexpr auto cameraX = 300, cameraY = 400;
 constexpr Color hitboxColor = {255, 0, 0, 128};
+constexpr Color hitboxColorAlt = {0, 255, 0, 128};
 
 std::random_device randDevice;
 std::mt19937 rng(randDevice());
@@ -197,10 +198,18 @@ public:
 	std::list<PlayerBullet> playerBullets;
 	void Draw(Texture2D *sprites)
 	{
-		DrawTexture(sprites[currentFrame], coords.x, coords.y, WHITE);
-		#ifdef DEBUG
-		DrawRectangleRec(hitbox, hitboxColor);
-		#endif
+		if (isHit) {
+			DrawTexture(sprites[currentFrame], coords.x, coords.y, RED);
+			#ifdef DEBUG
+			DrawRectangleRec(hitbox, hitboxColorAlt);
+			#endif
+		}
+		else {
+			DrawTexture(sprites[currentFrame], coords.x, coords.y, WHITE);
+			#ifdef DEBUG
+			DrawRectangleRec(hitbox, hitboxColor);
+			#endif
+		}
 	}
 	void ChangeSprite(float deltaTime)
 	{
