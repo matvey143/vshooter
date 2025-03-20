@@ -351,6 +351,8 @@ int main(void)
 				enemyBullets.erase(ebullets_it++);
 			else ebullets_it++;
 		}
+		// Invulnerability time
+		player.WaitInvul(deltaTime);
 
 		if (score < maxScore) score++;
 		char scoreString[13];
