@@ -53,7 +53,7 @@ public:
 		coords.x += hSpeed * deltaTime;
 		coords.y += vSpeed * deltaTime;
 	}
-	bool CollissionCheck(Rectangle player)
+	bool CollisionCheck(Rectangle player)
 	{
 		return CheckCollisionCircleRec(coords, radius, player);
 	}
@@ -72,7 +72,7 @@ public:
 	}
 	bool CollisionCheck(Rectangle player)
 	{
-		return CheckCollisionRecs(hitbox, player);
+		return CheckCollisionRecs({coords.x, coords.y, size.x, size.y}, player);
 	}
 	void Move(float deltaTime)
 	{
@@ -186,11 +186,13 @@ enum PlayerFrame {
 class Player {
 private:
 	enum PlayerFrame currentFrame = PLAYER_FRAME_NORMAL_1;
-	Rectangle hitbox = {0.0f, 0.0f, 6.0f, 10.0f};
 	float spriteTime = 0.0f;
-	float hitInvulnerability = 0.0ff;
+	float hitInvulTime = 0.0f;
 	float shootCooldown = 0.0f;
 public:
+	Rectangle hitbox = {0.0f, 0.0f, 6.0f, 10.0f};
+	bool isHit = false;
+	int lives = 5;
 	Vector2 coords;
 	std::list<PlayerBullet> playerBullets;
 	void Draw(Texture2D *sprites)
@@ -257,6 +259,20 @@ public:
 		for (it = playerBullets.begin(); it != playerBullets.end(); ++it)
 			it->Draw();
 	}
+	void WaitInvul(float deltaTime)
+	{
+		hitInvulTime += deltaTime;
+		static constexpr float hitTimer = 1.0f;
+		if (hitInvulTime >= hitTimer) {
+			isHit = false;
+			hitInvulTime = 0.0f;
+		}
+	}
+	void Hit()
+	{
+		lives--;
+		isHit = true; 
+	}
 };
 
 int main(void)
@@ -275,7 +291,6 @@ int main(void)
 	RenderTexture camTexture = LoadRenderTexture(cameraX, cameraY);
 
 	Font titleFont = LoadFont("titlefont.fnt");
-	//Font scoreFont = LoadFont("fantasque.ttf");
 	Font scoreFont = LoadFontEx("fantasque.ttf", 32, NULL, 0xFFFF);
 	Vector2 scoreSize = MeasureTextEx(scoreFont, "000000000000", 32.0, 0.0);
 
@@ -309,10 +324,12 @@ int main(void)
 		player.MoveAllBullets(deltaTime);
 
 		exampleUFO.Move(deltaTime);
+		if (exampleUFO.CollisionCheck(player.hitbox) && !player.isHit) player.Hit();
 		exampleUFO.Shoot(deltaTime);
 		exampleUFO.ChangeSprite(deltaTime);
 
 		exampleMeteoroid.Move(deltaTime);
+		if (exampleMeteoroid.CollisionCheck(player.hitbox) && !player.isHit) player.Hit();
 
 		if (bgStarCooldown >= 0.5f) {
 			stars.emplace_back();
@@ -329,6 +346,7 @@ int main(void)
 		std::list<EnemyBullet>::iterator ebullets_it;
 		for (ebullets_it = enemyBullets.begin(); ebullets_it != enemyBullets.end(); ) {
 			ebullets_it->Move(deltaTime);
+			if (ebullets_it->CollisionCheck(player.hitbox) && !player.isHit) player.Hit();
 			if (ebullets_it->coords.y + ebullets_it->size.y <= 0.0f)
 				enemyBullets.erase(ebullets_it++);
 			else ebullets_it++;
@@ -377,7 +395,7 @@ int main(void)
 			DrawTextEx(scoreFont, scoreString, {xScorePadding, yScorePadding}, 32.0f, 0.0f, WHITE);
 			// Lives
 			DrawTextEx(scoreFont, u8"Жизни", {xScorePadding, padding * 4}, 32.0f, 0.0f, WHITE);
-			for (int i = 0; i < lives; i++)
+			for (int i = 0; i < player.lives; i++)
 				DrawTexture(playerSprites[0], xScorePadding + padding * i, padding * 5, WHITE);
 		}
 		EndDrawing();
