@@ -34,6 +34,21 @@ public:
 	}
 };
 
+class Meteroid {
+private:
+	float speed = 400.0f;
+	float radius = 16.0f;
+public:
+	Vector2 coords;
+	void Draw(Texture2D texture)
+	{
+		DrawTexture(texture, coords.x - radius, coords.y - radius, WHITE);
+		#ifdef DEBUG
+		DrawCircleV(coords, radius, hitboxColor);
+		#endif
+	}
+};
+
 class EnemyBullet {
 private:
 	float speed = 250.0f;
@@ -128,7 +143,6 @@ public:
 		}
 		else shootTime += deltaTime;
 	}
-	// Only here to realign hitbox for now.
 	void Move(float deltaTime)
 	{
 		coords.y -= speed * deltaTime;
@@ -259,6 +273,10 @@ int main(void)
 	EnemyUFO exampleUFO;
 	exampleUFO.coords = {100.0f, cameraY};
 
+	Texture2D meteoroidSprite = LoadTexture("meteoroid-1.png");
+	Meteroid exampleMeteoroid;
+	exampleMeteoroid.coords = {100.0f, 100.0f};
+
 	SetTargetFPS(60);
 	while (!WindowShouldClose()) {
 		// Time passed between frames.
@@ -310,6 +328,8 @@ int main(void)
 			player.Draw(playerSprites);
 			// UFO
 			exampleUFO.Draw(ufoEnemySprites);
+			// Meteoroid
+			exampleMeteoroid.Draw(meteoroidSprite);
 			// Player's bullets
 			player.DrawAllBullets();
 			// Enemy's bullets
