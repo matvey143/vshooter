@@ -411,9 +411,14 @@ int main(void)
 		}
 		EndDrawing();
 	}
-	// TODO: Replace with loop
-	/* UnloadTexture(playerSprite1);
-	UnloadTexture(playerSprite2); */
+	// Quiting the program
+	UnloadFont(scoreFont);
+	UnloadFont(titleFont);
+	UnloadTexture(meteoroidSprite);
+	for (int i = 0; i < sizeof playerSprites / sizeof playerSprites[0]; i++)
+		UnloadTexture(playerSprites[i]);
+	for (int i = 0; i < sizeof ufoEnemySprites / sizeof ufoEnemySprites[0]; i++)
+		UnloadTexture(ufoEnemySprites[i]);
 	UnloadRenderTexture(camTexture);
 	CloseWindow();
 	return 0;
