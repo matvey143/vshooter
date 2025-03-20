@@ -36,7 +36,8 @@ public:
 
 class Meteroid {
 private:
-	float speed = 400.0f;
+	float vSpeed = -200.0f;
+	float hSpeed = 0.0f;
 	float radius = 16.0f;
 public:
 	Vector2 coords;
@@ -46,6 +47,15 @@ public:
 		#ifdef DEBUG
 		DrawCircleV(coords, radius, hitboxColor);
 		#endif
+	}
+	void Move(float deltaTime)
+	{
+		coords.x += hSpeed * deltaTime;
+		coords.y += vSpeed * deltaTime;
+	}
+	bool CollissionCheck(Rectangle player)
+	{
+		return CheckCollisionCircleRec(coords, radius, player);
 	}
 };
 
@@ -59,6 +69,10 @@ public:
 	void Draw()
 	{
 		DrawRectangleV(coords, size, GREEN);
+	}
+	bool CollisionCheck(Rectangle player)
+	{
+		return CheckCollisionRecs(hitbox, player);
 	}
 	void Move(float deltaTime)
 	{
@@ -123,6 +137,10 @@ public:
 		DrawRectangleRec(hitbox, hitboxColor);
 		#endif
 	}
+	bool CollisionCheck(Rectangle player)
+	{
+		return CheckCollisionRecs(hitbox, player);
+	}
 	void ChangeSprite(float deltaTime)
 	{
 		constexpr static float changeTime = 1.0f / (sizeof (EnemyFrameUFO) / sizeof UFO_FRAME_NORMAL_1) / 2.0f;
@@ -170,6 +188,7 @@ private:
 	enum PlayerFrame currentFrame = PLAYER_FRAME_NORMAL_1;
 	Rectangle hitbox = {0.0f, 0.0f, 6.0f, 10.0f};
 	float spriteTime = 0.0f;
+	float hitInvulnerability = 0.0ff;
 	float shootCooldown = 0.0f;
 public:
 	Vector2 coords;
@@ -292,6 +311,8 @@ int main(void)
 		exampleUFO.Move(deltaTime);
 		exampleUFO.Shoot(deltaTime);
 		exampleUFO.ChangeSprite(deltaTime);
+
+		exampleMeteoroid.Move(deltaTime);
 
 		if (bgStarCooldown >= 0.5f) {
 			stars.emplace_back();
