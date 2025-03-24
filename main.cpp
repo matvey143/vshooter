@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <random>
 
+bool debug = false;
 constexpr auto cameraX = 300, cameraY = 400;
 constexpr Color hitboxColor = {255, 0, 0, 128};
 constexpr Color hitboxColorAlt = {0, 255, 0, 128};
@@ -45,9 +46,9 @@ public:
 	void Draw(Texture2D texture)
 	{
 		DrawTexture(texture, coords.x - radius, coords.y - radius, WHITE);
-		#ifdef DEBUG
-		DrawCircleV(coords, radius, hitboxColor);
-		#endif
+		if (debug) {
+			DrawCircleV(coords, radius, hitboxColor);
+		}
 	}
 	void Move(float deltaTime)
 	{
@@ -134,9 +135,9 @@ public:
 	void Draw(Texture2D *sprites)
 	{
 		DrawTexture(sprites[currentFrame], coords.x, coords.y, WHITE);
-		#ifdef DEBUG
-		DrawRectangleRec(hitbox, hitboxColor);
-		#endif
+		if (debug) {
+			DrawRectangleRec(hitbox, hitboxColor);
+		}
 	}
 	bool CollisionCheck(Rectangle player)
 	{
@@ -200,15 +201,15 @@ public:
 	{
 		if (isHit) {
 			DrawTexture(sprites[currentFrame], coords.x, coords.y, RED);
-			#ifdef DEBUG
-			DrawRectangleRec(hitbox, hitboxColorAlt);
-			#endif
+			if (debug) {
+				DrawRectangleRec(hitbox, hitboxColorAlt);
+			}
 		}
 		else {
 			DrawTexture(sprites[currentFrame], coords.x, coords.y, WHITE);
-			#ifdef DEBUG
-			DrawRectangleRec(hitbox, hitboxColor);
-			#endif
+			if (debug) {
+				DrawRectangleRec(hitbox, hitboxColor);
+			}
 		}
 	}
 	void ChangeSprite(float deltaTime)
@@ -331,6 +332,8 @@ int main(void)
 		player.Fire(deltaTime);
 		// Moving bullets. They are removed if they move outside window.
 		player.MoveAllBullets(deltaTime);
+		
+		if (IsKeyReleased(KEY_TAB)) debug = !debug;
 
 		exampleUFO.Move(deltaTime);
 		if (exampleUFO.CollisionCheck(player.hitbox) && !player.isHit) player.Hit();
