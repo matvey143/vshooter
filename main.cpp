@@ -5,11 +5,9 @@
 #include <random>
 // Custom header files start here.
 #include "enemies.hpp"
+#include "globalVariables.hpp"
 
-bool debug = false;
 constexpr auto cameraX = 300, cameraY = 400;
-constexpr Color hitboxColor = {255, 0, 0, 128};
-constexpr Color hitboxColorAlt = {0, 255, 0, 128};
 
 std::random_device randDevice;
 std::mt19937 rng(randDevice());

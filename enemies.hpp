@@ -1,4 +1,6 @@
 #include "raylib.h"
+#include <list>
+#include "globalVariables.hpp"
 
 class Meteroid {
 private:
