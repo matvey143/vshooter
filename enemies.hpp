@@ -27,7 +27,7 @@ public:
 	EnemyBullet(Vector2 newCoords);
 	// Might add variants for different speeds and bullet sizes.
 };
-std::list<EnemyBullet> enemyBullets;
+extern std::list<EnemyBullet> enemyBullets;
 
 enum EnemyFrameUFO {
 	UFO_FRAME_NORMAL_1 = 0,
