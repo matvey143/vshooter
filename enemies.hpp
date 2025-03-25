@@ -2,6 +2,9 @@
 #include <list>
 #include "globalVariables.hpp"
 
+#ifndef ENEMIES_HPP
+#define ENEMIES_HPP
+
 class Meteroid {
 private:
 	float vSpeed;
@@ -52,3 +55,4 @@ public:
 	void Shoot(float deltaTime, std::list<EnemyBullet> *enemyBullets);
 	void Move(float deltaTime);
 };
+#endif
