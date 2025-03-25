@@ -9,11 +9,11 @@ private:
 	float radius = 16.0f;
 public:
 	Vector2 coords;
-	void Draw(Texture2D texture)
+	void Draw(Texture2D texture, bool debug)
 	{
 		DrawTexture(texture, coords.x - radius, coords.y - radius, WHITE);
 		if (debug) {
-			DrawCircleV(coords, radius, hitboxColor);
+			DrawCircleV(coords, radius, HITBOX_COLOR);
 		}
 	}
 	void Move(float deltaTime)
@@ -72,11 +72,11 @@ private:
 	bool movesRight = false;
 public:
 	Vector2 coords;
-	void Draw(Texture2D *sprites)
+	void Draw(Texture2D *sprites, bool debug)
 	{
 		DrawTexture(sprites[currentFrame], coords.x, coords.y, WHITE);
 		if (debug) {
-			DrawRectangleRec(hitbox, hitboxColor);
+			DrawRectangleRec(hitbox, HITBOX_COLOR);
 		}
 	}
 	bool CollisionCheck(Rectangle player)

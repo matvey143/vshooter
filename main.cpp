@@ -79,18 +79,18 @@ public:
 	int lives = 5;
 	Vector2 coords;
 	std::list<PlayerBullet> playerBullets;
-	void Draw(Texture2D *sprites)
+	void Draw(Texture2D *sprites, bool debug)
 	{
 		if (isHit) {
 			DrawTexture(sprites[currentFrame], coords.x, coords.y, RED);
 			if (debug) {
-				DrawRectangleRec(hitbox, hitboxColorAlt);
+				DrawRectangleRec(hitbox, HITBOX_COLOR_ALT);
 			}
 		}
 		else {
 			DrawTexture(sprites[currentFrame], coords.x, coords.y, WHITE);
 			if (debug) {
-				DrawRectangleRec(hitbox, hitboxColor);
+				DrawRectangleRec(hitbox, HITBOX_COLOR);
 			}
 		}
 	}
@@ -191,6 +191,7 @@ int main(void)
 	float shootCooldown = 0.0f;
 	Texture2D playerSprites[] = {LoadTexture("player-1.png"), LoadTexture("player-2.png")};
 	int lives = 5;
+	bool debug = false;
 
 	float bgStarCooldown = 0.0f;
 	std::list<BgStar> stars;
@@ -260,11 +261,11 @@ int main(void)
 			for (it = stars.begin(); it != stars.end(); ++it)
 				it->Draw();
 			// Player
-			player.Draw(playerSprites);
+			player.Draw(playerSprites, debug);
 			// UFO
-			exampleUFO.Draw(ufoEnemySprites);
+			exampleUFO.Draw(ufoEnemySprites, debug);
 			// Meteoroid
-			exampleMeteoroid.Draw(meteoroidSprite);
+			exampleMeteoroid.Draw(meteoroidSprite, debug);
 			// Player's bullets
 			player.DrawAllBullets();
 			// Enemy's bullets

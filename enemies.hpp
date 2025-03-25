@@ -9,7 +9,7 @@ private:
 	float radius;
 public:
 	Vector2 coords;
-	void Draw(Texture2D texture);
+	void Draw(Texture2D texture, bool debug);
 	void Move(float deltaTime);
 	bool CollisionCheck(Rectangle player);
 };
@@ -47,7 +47,7 @@ private:
 	bool movesRight;
 public:
 	Vector2 coords;
-	void Draw(Texture2D *sprites);
+	void Draw(Texture2D *sprites, bool debug);
 	bool CollisionCheck(Rectangle player);
 	void ChangeSprite(float deltaTime);
 	void Shoot(float deltaTime);
