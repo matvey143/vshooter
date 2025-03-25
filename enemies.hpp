@@ -27,7 +27,6 @@ public:
 	EnemyBullet(Vector2 newCoords);
 	// Might add variants for different speeds and bullet sizes.
 };
-extern std::list<EnemyBullet> enemyBullets;
 
 enum EnemyFrameUFO {
 	UFO_FRAME_NORMAL_1 = 0,
@@ -50,6 +49,6 @@ public:
 	void Draw(Texture2D *sprites, bool debug);
 	bool CollisionCheck(Rectangle player);
 	void ChangeSprite(float deltaTime);
-	void Shoot(float deltaTime);
+	void Shoot(float deltaTime, std::list<EnemyBullet> *enemyBullets);
 	void Move(float deltaTime);
 };

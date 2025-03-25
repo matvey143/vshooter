@@ -169,6 +169,7 @@ public:
 
 int main(void)
 {
+	std::list<EnemyBullet> enemyBullets;
 	uint64_t score = 0;
 	constexpr uint64_t maxScore = 999'999'999'999;
 	InitWindow(640, 480, "vshooter");
@@ -220,7 +221,7 @@ int main(void)
 
 		exampleUFO.Move(deltaTime);
 		if (exampleUFO.CollisionCheck(player.hitbox) && !player.isHit) player.Hit();
-		exampleUFO.Shoot(deltaTime);
+		exampleUFO.Shoot(deltaTime, &enemyBullets);
 		exampleUFO.ChangeSprite(deltaTime);
 
 		exampleMeteoroid.Move(deltaTime);
