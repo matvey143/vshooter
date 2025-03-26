@@ -202,8 +202,7 @@ int main(void)
 	exampleUFO.coords = {100.0f, cameraY};
 
 	Texture2D meteoroidSprite = LoadTexture("meteoroid-1.png");
-	Meteroid exampleMeteoroid;
-	exampleMeteoroid.coords = {100.0f, 100.0f};
+	Meteoroid exampleMeteoroid = Meteoroid({100.0f, 100.0f}, 0.0f, 0.0f);
 
 	SetTargetFPS(60);
 	while (!WindowShouldClose()) {

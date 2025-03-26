@@ -3,22 +3,28 @@
 #include "globalVariables.hpp"
 #include "enemies.hpp"
 
-// Meteroid class
-void Meteroid::Draw(Texture2D texture, bool debug)
+// Meteoroid class
+void Meteoroid::Draw(Texture2D texture, bool debug)
 {
 	DrawTexture(texture, coords.x - radius, coords.y - radius, WHITE);
 	if (debug) {
 		DrawCircleV(coords, radius, HITBOX_COLOR);
 	}
 }
-void Meteroid::Move(float deltaTime)
+void Meteoroid::Move(float deltaTime)
 {
 	coords.x += hSpeed * deltaTime;
 	coords.y += vSpeed * deltaTime;
 }
-bool Meteroid::CollisionCheck(Rectangle player)
+bool Meteoroid::CollisionCheck(Rectangle player)
 {
 	return CheckCollisionCircleRec(coords, radius, player);
+}
+Meteoroid::Meteoroid(Vector2 coordsNew, float vSpeedNew, float hSpeedNew)
+{
+	coords = coordsNew;
+	vSpeed = vSpeedNew;
+	hSpeed = hSpeedNew;
 }
 
 //EnemyBullet class
@@ -38,7 +44,8 @@ EnemyBullet::EnemyBullet(Vector2 newCoords)
 {
 	coords = newCoords;
 }
-	// Might add variants for different speeds and bullet sizes.
+// Might add variants for different speeds and bullet sizes.
+
 // EnemyUFO class
 void EnemyUFO::Draw(Texture2D *sprites, bool debug)
 {

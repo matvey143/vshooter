@@ -5,7 +5,7 @@
 #ifndef ENEMIES_HPP
 #define ENEMIES_HPP
 
-class Meteroid {
+class Meteoroid {
 private:
 	// Might be changed with initializers
 	float vSpeed = -100.0f;
@@ -16,6 +16,7 @@ public:
 	void Draw(Texture2D texture, bool debug);
 	void Move(float deltaTime);
 	bool CollisionCheck(Rectangle player);
+	Meteoroid(Vector2 coordsNew, float vSpeedNew, float hSpeedNew);
 };
 
 class EnemyBullet {
