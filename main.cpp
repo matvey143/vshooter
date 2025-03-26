@@ -167,6 +167,12 @@ public:
 	}
 };
 
+void gameOver(uint64_t *score, Player *player)
+{
+	*score = 0;
+	player->lives = 5;
+}
+
 int main(void)
 {
 	std::list<EnemyBullet> enemyBullets;
@@ -250,6 +256,7 @@ int main(void)
 		player.WaitInvul(deltaTime);
 
 		if (score < maxScore) score++;
+		if (player.lives < 0) gameOver(&score, &player);
 		char scoreString[13];
 		std::snprintf(scoreString, 13, "%012llu", score);
 
