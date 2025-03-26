@@ -10,13 +10,13 @@ private:
 	// Might be changed with initializers
 	float vSpeed = -100.0f;
 	float hSpeed = 0.0f;
-	float radius = 16.0f;
 public:
+	float radius = 16.0f;
 	Vector2 coords;
 	void Draw(Texture2D texture, bool debug);
 	void Move(float deltaTime);
 	bool CollisionCheck(Rectangle player);
-	Meteoroid(Vector2 coordsNew, float vSpeedNew, float hSpeedNew);
+	Meteoroid(Vector2 coordsNew, float hSpeedNew, float vSpeedNew);
 };
 
 class EnemyBullet {

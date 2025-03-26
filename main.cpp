@@ -167,6 +167,22 @@ public:
 	}
 };
 
+std::uniform_real_distribution<float> randomSpeedXMeteoroid(-20.0f, 20.0f);
+std::uniform_real_distribution<float> randomSpeedYMeteoroid(-100.0f, -50.0f);
+void events(float deltaTime, std::list<Meteoroid> *meteoroid)
+{
+	static unsigned long seconds = 0;
+	static float time = 0.0f;
+	time += deltaTime;
+	if (time >= 1.0f) {
+		time = 0.0f;
+		seconds++;
+		// Should spawn enemies every X seconds.
+		if (seconds % 3 == 0) meteoroid->emplace_back((Vector2){randomX(rng), cameraY}, randomSpeedXMeteoroid(rng), randomSpeedYMeteoroid(rng));
+		if (seconds % 5 == 0); /* New UFO */
+	}
+}
+
 void gameOver(uint64_t *score, Player *player)
 {
 	*score = 0;
@@ -208,6 +224,7 @@ int main(void)
 	exampleUFO.coords = {100.0f, cameraY};
 
 	Texture2D meteoroidSprite = LoadTexture("meteoroid-1.png");
+	std::list<Meteoroid> meteoroids;
 	Meteoroid exampleMeteoroid = Meteoroid({100.0f, 100.0f}, 0.0f, 0.0f);
 
 	SetTargetFPS(60);
@@ -223,14 +240,20 @@ int main(void)
 		player.MoveAllBullets(deltaTime);
 		
 		if (IsKeyReleased(KEY_TAB)) debug = !debug;
+		events(deltaTime, &meteoroids);
 
 		exampleUFO.Move(deltaTime);
 		if (exampleUFO.CollisionCheck(player.hitbox) && !player.isHit) player.Hit();
 		exampleUFO.Shoot(deltaTime, &enemyBullets);
 		exampleUFO.ChangeSprite(deltaTime);
 
-		exampleMeteoroid.Move(deltaTime);
-		if (exampleMeteoroid.CollisionCheck(player.hitbox) && !player.isHit) player.Hit();
+		std::list<Meteoroid>::iterator meteor_it;
+		for (meteor_it = meteoroids.begin(); meteor_it != meteoroids.end(); ) {
+			meteor_it->Move(deltaTime);
+			if (meteor_it->CollisionCheck(player.hitbox) && !player.isHit) player.Hit();
+			if (meteor_it->coords.y + meteor_it->radius <= 0.0f) meteoroids.erase(meteor_it++);
+			else meteor_it++;
+		}
 
 		if (bgStarCooldown >= 0.5f) {
 			stars.emplace_back();
@@ -272,7 +295,9 @@ int main(void)
 			// UFO
 			exampleUFO.Draw(ufoEnemySprites, debug);
 			// Meteoroid
-			exampleMeteoroid.Draw(meteoroidSprite, debug);
+			for (meteor_it = meteoroids.begin(); meteor_it != meteoroids.end(); meteor_it++)
+				meteor_it->Draw(meteoroidSprite, debug);
+			//exampleMeteoroid.Draw(meteoroidSprite, debug);
 			// Player's bullets
 			player.DrawAllBullets();
 			// Enemy's bullets

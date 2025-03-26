@@ -20,7 +20,7 @@ bool Meteoroid::CollisionCheck(Rectangle player)
 {
 	return CheckCollisionCircleRec(coords, radius, player);
 }
-Meteoroid::Meteoroid(Vector2 coordsNew, float vSpeedNew, float hSpeedNew)
+Meteoroid::Meteoroid(Vector2 coordsNew, float hSpeedNew, float vSpeedNew)
 {
 	coords = coordsNew;
 	vSpeed = vSpeedNew;
