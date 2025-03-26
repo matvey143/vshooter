@@ -7,9 +7,10 @@
 
 class Meteroid {
 private:
-	float vSpeed;
-	float hSpeed;
-	float radius;
+	// Might be changed with initializers
+	float vSpeed = -100.0f;
+	float hSpeed = 0.0f;
+	float radius = 16.0f;
 public:
 	Vector2 coords;
 	void Draw(Texture2D texture, bool debug);
@@ -19,10 +20,10 @@ public:
 
 class EnemyBullet {
 private:
-	float speed;
-	Color color;
+	float speed = 250.0f;
+	Color color = GREEN;
 public:
-	Vector2 size;
+	Vector2 size = {4.0f, 12.0f};
 	Vector2 coords;
 	void Draw();
 	bool CollisionCheck(Rectangle player);
@@ -38,15 +39,15 @@ enum EnemyFrameUFO {
 
 class EnemyUFO {
 private:
-	enum EnemyFrameUFO currentFrame;
-	Rectangle hitbox;
-	float spriteTime;
-	float shootTime;
-	float shootCooldown;
-	float moveTime;
-	float moveCooldown;
-	float speed;
-	bool movesRight;
+	enum EnemyFrameUFO currentFrame = UFO_FRAME_NORMAL_1;
+	Rectangle hitbox = {0.0f, 0.0f, 28.0f, 15.0f};
+	float spriteTime = 0.0f;
+	float shootTime = 0.0f;
+	float shootCooldown = 0.5f;
+	float moveTime = 0.0f;
+	float moveCooldown = 1.0f;
+	float speed = 100.0f;
+	bool movesRight = false;
 public:
 	Vector2 coords;
 	void Draw(Texture2D *sprites, bool debug);
