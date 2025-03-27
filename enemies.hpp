@@ -41,7 +41,6 @@ enum EnemyFrameUFO {
 class EnemyUFO {
 private:
 	enum EnemyFrameUFO currentFrame = UFO_FRAME_NORMAL_1;
-	Rectangle hitbox = {0.0f, 0.0f, 28.0f, 15.0f};
 	float spriteTime = 0.0f;
 	float shootTime = 0.0f;
 	float shootCooldown = 0.5f;
@@ -50,11 +49,13 @@ private:
 	float speed = 100.0f;
 	bool movesRight = false;
 public:
+	Rectangle hitbox = {0.0f, 0.0f, 28.0f, 15.0f};
 	Vector2 coords;
 	void Draw(Texture2D *sprites, bool debug);
 	bool CollisionCheck(Rectangle player);
 	void ChangeSprite(float deltaTime);
 	void Shoot(float deltaTime, std::list<EnemyBullet> *enemyBullets);
 	void Move(float deltaTime);
+	EnemyUFO(float newX, float newY);
 };
 #endif

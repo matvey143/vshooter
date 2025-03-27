@@ -169,7 +169,7 @@ public:
 
 std::uniform_real_distribution<float> randomSpeedXMeteoroid(-20.0f, 20.0f);
 std::uniform_real_distribution<float> randomSpeedYMeteoroid(-100.0f, -50.0f);
-void events(float deltaTime, std::list<Meteoroid> *meteoroid)
+void events(float deltaTime, std::list<Meteoroid> *meteoroid, std::list<EnemyUFO> *ufos)
 {
 	static unsigned long seconds = 0;
 	static float time = 0.0f;
@@ -178,8 +178,9 @@ void events(float deltaTime, std::list<Meteoroid> *meteoroid)
 		time = 0.0f;
 		seconds++;
 		// Should spawn enemies every X seconds.
-		if (seconds % 3 == 0) meteoroid->emplace_back((Vector2){randomX(rng), cameraY}, randomSpeedXMeteoroid(rng), randomSpeedYMeteoroid(rng));
-		if (seconds % 5 == 0); /* New UFO */
+		if (seconds % 3 == 0)
+			meteoroid->emplace_back((Vector2){randomX(rng), cameraY}, randomSpeedXMeteoroid(rng), randomSpeedYMeteoroid(rng));
+		if (seconds % 5 == 0) ufos->emplace_back(randomX(rng), cameraY);
 	}
 }
 
@@ -220,8 +221,9 @@ int main(void)
 	std::list<BgStar> stars;
 
 	Texture2D ufoEnemySprites[] = {LoadTexture("ufo-normal1.png"), LoadTexture("ufo-normal2.png")};
-	EnemyUFO exampleUFO;
-	exampleUFO.coords = {100.0f, cameraY};
+	std::list<EnemyUFO> saucers;
+	//EnemyUFO exampleUFO;
+	//exampleUFO.coords = {100.0f, cameraY};
 
 	Texture2D meteoroidSprite = LoadTexture("meteoroid-1.png");
 	std::list<Meteoroid> meteoroids;
@@ -240,12 +242,17 @@ int main(void)
 		player.MoveAllBullets(deltaTime);
 		
 		if (IsKeyReleased(KEY_TAB)) debug = !debug;
-		events(deltaTime, &meteoroids);
+		events(deltaTime, &meteoroids, &saucers);
 
-		exampleUFO.Move(deltaTime);
-		if (exampleUFO.CollisionCheck(player.hitbox) && !player.isHit) player.Hit();
-		exampleUFO.Shoot(deltaTime, &enemyBullets);
-		exampleUFO.ChangeSprite(deltaTime);
+		std::list<EnemyUFO>::iterator ufo_it;
+		for (ufo_it = saucers.begin(); ufo_it != saucers.end(); ) {
+			ufo_it->Move(deltaTime);
+			if (ufo_it->CollisionCheck(player.hitbox) && !player.isHit) player.Hit();
+			ufo_it->Shoot(deltaTime, &enemyBullets);
+			ufo_it->ChangeSprite(deltaTime);
+			if (ufo_it->hitbox.y + ufo_it->hitbox.height <= 0.0f) saucers.erase(ufo_it++);
+			else ufo_it++;
+		}
 
 		std::list<Meteoroid>::iterator meteor_it;
 		for (meteor_it = meteoroids.begin(); meteor_it != meteoroids.end(); ) {
@@ -293,11 +300,12 @@ int main(void)
 			// Player
 			player.Draw(playerSprites, debug);
 			// UFO
-			exampleUFO.Draw(ufoEnemySprites, debug);
+			for (ufo_it = saucers.begin(); ufo_it != saucers.end(); ufo_it++)
+				ufo_it->Draw(ufoEnemySprites, debug);
+			//exampleUFO.Draw(ufoEnemySprites, debug);
 			// Meteoroid
 			for (meteor_it = meteoroids.begin(); meteor_it != meteoroids.end(); meteor_it++)
 				meteor_it->Draw(meteoroidSprite, debug);
-			//exampleMeteoroid.Draw(meteoroidSprite, debug);
 			// Player's bullets
 			player.DrawAllBullets();
 			// Enemy's bullets

@@ -93,3 +93,8 @@ void EnemyUFO::Move(float deltaTime)
 	hitbox.x = coords.x + xOffset;
 	hitbox.y = coords.y + yOffset; 
 }
+EnemyUFO::EnemyUFO(float newX, float newY)
+{
+	coords.x = newX;
+	coords.y = newY;
+}
