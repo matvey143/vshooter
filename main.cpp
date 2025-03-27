@@ -18,8 +18,8 @@ std::uniform_real_distribution<float> randomStarSpeed(5.0f, 10.0f);
 class PlayerBullet {
 private:
 	static constexpr float speed = 1000.0f;
-	static constexpr Vector2 size = {4.0f, 12.0f};
 public:
+	static constexpr Vector2 size = {4.0f, 12.0f};
 	Vector2 coords;
 	void Draw()
 	{
@@ -217,13 +217,12 @@ int main(void)
 	int lives = 5;
 	bool debug = false;
 
+	bool playerBulletCollission = false;
 	float bgStarCooldown = 0.0f;
 	std::list<BgStar> stars;
 
 	Texture2D ufoEnemySprites[] = {LoadTexture("ufo-normal1.png"), LoadTexture("ufo-normal2.png")};
 	std::list<EnemyUFO> saucers;
-	//EnemyUFO exampleUFO;
-	//exampleUFO.coords = {100.0f, cameraY};
 
 	Texture2D meteoroidSprite = LoadTexture("meteoroid-1.png");
 	std::list<Meteoroid> meteoroids;
@@ -244,10 +243,24 @@ int main(void)
 		if (IsKeyReleased(KEY_TAB)) debug = !debug;
 		events(deltaTime, &meteoroids, &saucers);
 
+		std::list<PlayerBullet>::iterator pbullets_it;
 		std::list<EnemyUFO>::iterator ufo_it;
 		for (ufo_it = saucers.begin(); ufo_it != saucers.end(); ) {
 			ufo_it->Move(deltaTime);
 			if (ufo_it->CollisionCheck(player.hitbox) && !player.isHit) player.Hit();
+			// Collision checks for player's bullets.
+			for (pbullets_it = player.playerBullets.begin(); pbullets_it != player.playerBullets.end(); pbullets_it++) {
+				if (ufo_it->CollisionCheck({pbullets_it->coords.x, pbullets_it->coords.y, pbullets_it->size.x, pbullets_it->size.y})) {
+					playerBulletCollission = true;
+					player.playerBullets.erase(pbullets_it++);
+					break;
+				}
+			}
+			if (playerBulletCollission) {
+				playerBulletCollission = false;
+				saucers.erase(ufo_it++);
+				continue;
+			}
 			ufo_it->Shoot(deltaTime, &enemyBullets);
 			ufo_it->ChangeSprite(deltaTime);
 			if (ufo_it->hitbox.y + ufo_it->hitbox.height <= 0.0f) saucers.erase(ufo_it++);
@@ -302,7 +315,6 @@ int main(void)
 			// UFO
 			for (ufo_it = saucers.begin(); ufo_it != saucers.end(); ufo_it++)
 				ufo_it->Draw(ufoEnemySprites, debug);
-			//exampleUFO.Draw(ufoEnemySprites, debug);
 			// Meteoroid
 			for (meteor_it = meteoroids.begin(); meteor_it != meteoroids.end(); meteor_it++)
 				meteor_it->Draw(meteoroidSprite, debug);
