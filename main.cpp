@@ -13,7 +13,6 @@ std::random_device randDevice;
 std::mt19937 rng(randDevice());
 std::uniform_int_distribution<unsigned char> randomColor(0, 0xFF);
 std::uniform_real_distribution<float> randomX(0.0f, cameraX);
-std::uniform_real_distribution<float> randomStarSpeed(5.0f, 10.0f);
 
 class PlayerBullet {
 private:
@@ -36,6 +35,7 @@ public:
 	}
 };
 
+std::uniform_real_distribution<float> randomStarSpeed(5.0f, 10.0f);
 class BgStar {
 private:
 	Color bgColor;
@@ -78,7 +78,7 @@ public:
 	bool isHit = false;
 	int lives = 5;
 	Vector2 coords;
-	std::list<PlayerBullet> playerBullets;
+	std::list<PlayerBullet> bullets;
 	void Draw(Texture2D *sprites, bool debug)
 	{
 		if (isHit) {
@@ -129,7 +129,7 @@ public:
 			// Limits playe to only 4 shots per second.
 			shootCooldown = 0.25f;
 			// Construct class member at the end of list.
-			playerBullets.emplace_back((Vector2) {hitbox.x + (hitbox.width / 2.0f), hitbox.y});
+			bullets.emplace_back((Vector2) {hitbox.x + (hitbox.width / 2.0f), hitbox.y});
 		}
 		else {
 			if (shootCooldown > 0.0f) shootCooldown -= deltaTime;
@@ -138,17 +138,17 @@ public:
 	void MoveAllBullets(float deltaTime)
 	{
 		std::list<PlayerBullet>::iterator it;
-		for (it = playerBullets.begin(); it != playerBullets.end(); ) {
+		for (it = bullets.begin(); it != bullets.end(); ) {
 			it->Move(deltaTime);
 			if (it->coords.y > cameraY)
-				playerBullets.erase(it++);
+				bullets.erase(it++);
 			else it++;
 		}
 	}
 	void DrawAllBullets()
 	{
 		std::list<PlayerBullet>::iterator it;
-		for (it = playerBullets.begin(); it != playerBullets.end(); ++it)
+		for (it = bullets.begin(); it != bullets.end(); ++it)
 			it->Draw();
 	}
 	void WaitInvul(float deltaTime)
@@ -249,10 +249,10 @@ int main(void)
 			ufo_it->Move(deltaTime);
 			if (ufo_it->CollisionCheck(player.hitbox) && !player.isHit) player.Hit();
 			// Collision checks for player's bullets.
-			for (pbullets_it = player.playerBullets.begin(); pbullets_it != player.playerBullets.end(); pbullets_it++) {
+			for (pbullets_it = player.bullets.begin(); pbullets_it != player.bullets.end(); pbullets_it++) {
 				if (ufo_it->CollisionCheck({pbullets_it->coords.x, pbullets_it->coords.y, pbullets_it->size.x, pbullets_it->size.y})) {
 					playerBulletCollission = true;
-					player.playerBullets.erase(pbullets_it++);
+					player.bullets.erase(pbullets_it++);
 					break;
 				}
 			}
