@@ -252,7 +252,7 @@ int main(void)
 	Texture2D ufoEnemySprites[] = {LoadTexture("graphics/ufo-normal1.png"), LoadTexture("graphics/ufo-normal2.png")};
 	std::list<EnemyUFO> saucers;
 
-	Texture2D meteoroidSprite = LoadTexture("graphicsmeteoroid-1.png");
+	Texture2D meteoroidSprite = LoadTexture("graphics/meteoroid-1.png");
 	std::list<Meteoroid> meteoroids;
 	Meteoroid exampleMeteoroid = Meteoroid({100.0f, 100.0f}, 0.0f, 0.0f);
 
@@ -329,6 +329,20 @@ int main(void)
 		for (meteor_it = meteoroids.begin(); meteor_it != meteoroids.end(); ) {
 			meteor_it->Move(deltaTime);
 			if (meteor_it->CollisionCheck(player.hitbox) && !player.isHit) player.Hit();
+			// Player bullet collsion checks.
+			for (pbullets_it = player.bullets.begin(); pbullets_it != player.bullets.end(); pbullets_it++) {
+				if (meteor_it->CollisionCheck((Rectangle){pbullets_it->coords.x, pbullets_it->coords.y, pbullets_it->size.x, pbullets_it->size.y})) {
+					playerBulletCollission = true;
+					player.bullets.erase(pbullets_it++);
+					break;
+				}
+			}
+			if (playerBulletCollission) {
+				playerBulletCollission = false;
+				explosions.emplace_back((Vector2){meteor_it->coords.x - meteor_it->radius, meteor_it->coords.y - meteor_it->radius});
+				meteoroids.erase(meteor_it++);
+				continue;
+			}
 			if (meteor_it->coords.y + meteor_it->radius <= 0.0f) meteoroids.erase(meteor_it++);
 			else meteor_it++;
 		}
