@@ -213,7 +213,7 @@ int main(void)
 	Player player;
 	player.coords = {150.0, 200.0};
 	float shootCooldown = 0.0f;
-	Texture2D playerSprites[] = {LoadTexture("player-1.png"), LoadTexture("player-2.png")};
+	Texture2D playerSprites[] = {LoadTexture("graphics/player-1.png"), LoadTexture("graphics/player-2.png")};
 	int lives = 5;
 	bool debug = false;
 
@@ -221,10 +221,10 @@ int main(void)
 	float bgStarCooldown = 0.0f;
 	std::list<BgStar> stars;
 
-	Texture2D ufoEnemySprites[] = {LoadTexture("ufo-normal1.png"), LoadTexture("ufo-normal2.png")};
+	Texture2D ufoEnemySprites[] = {LoadTexture("graphics/ufo-normal1.png"), LoadTexture("graphics/ufo-normal2.png")};
 	std::list<EnemyUFO> saucers;
 
-	Texture2D meteoroidSprite = LoadTexture("meteoroid-1.png");
+	Texture2D meteoroidSprite = LoadTexture("graphics/meteoroid-1.png");
 	std::list<Meteoroid> meteoroids;
 	Meteoroid exampleMeteoroid = Meteoroid({100.0f, 100.0f}, 0.0f, 0.0f);
 
