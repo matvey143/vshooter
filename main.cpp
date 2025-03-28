@@ -184,6 +184,34 @@ void events(float deltaTime, std::list<Meteoroid> *meteoroid, std::list<EnemyUFO
 	}
 }
 
+class Explosion {
+private:
+	float time = 0.0f;
+	int x, y;
+public:
+	int index = 0;
+	void Wait (float deltaTime, const int arraySize)
+	{
+		constexpr float cooldown = 0.05f;
+		time += deltaTime;
+		if (time >= cooldown) {
+			time = 0.0f;
+			index++;
+			// Meaning that explosion is about to be removed from memory.
+			if (index >= arraySize) index = -1;
+		}
+	}
+	void Draw(Texture2D *spriteArray)
+	{
+		DrawTexture(spriteArray[index], x, y, WHITE);
+	}
+	Explosion(Vector2 coords)
+	{
+		x = (int) coords.x;
+		y = (int) coords.y;
+	}
+};
+
 void gameOver(uint64_t *score, Player *player)
 {
 	*score = 0;
@@ -224,9 +252,31 @@ int main(void)
 	Texture2D ufoEnemySprites[] = {LoadTexture("graphics/ufo-normal1.png"), LoadTexture("graphics/ufo-normal2.png")};
 	std::list<EnemyUFO> saucers;
 
-	Texture2D meteoroidSprite = LoadTexture("graphics/meteoroid-1.png");
+	Texture2D meteoroidSprite = LoadTexture("graphicsmeteoroid-1.png");
 	std::list<Meteoroid> meteoroids;
 	Meteoroid exampleMeteoroid = Meteoroid({100.0f, 100.0f}, 0.0f, 0.0f);
+
+	Texture2D explosionSprites[] = {
+		LoadTexture("graphics/explosion_1.png"),
+		LoadTexture("graphics/explosion_2.png"),
+		LoadTexture("graphics/explosion_3.png"),
+		LoadTexture("graphics/explosion_4.png"),
+		LoadTexture("graphics/explosion_5.png"),
+		LoadTexture("graphics/explosion_6.png"),
+		LoadTexture("graphics/explosion_7.png"),
+		LoadTexture("graphics/explosion_8.png"),
+		LoadTexture("graphics/explosion_9.png"),
+		LoadTexture("graphics/explosion_10.png"),
+		LoadTexture("graphics/explosion_11.png"),
+		LoadTexture("graphics/explosion_12.png"),
+		LoadTexture("graphics/explosion_13.png"),
+		LoadTexture("graphics/explosion_14.png"),
+		LoadTexture("graphics/explosion_15.png"),
+		LoadTexture("graphics/explosion_16.png"),
+		LoadTexture("graphics/explosion_17.png")
+	};
+	constexpr int explosionSpritesAmount = sizeof explosionSprites / sizeof explosionSprites[0];
+	std::list<Explosion> explosions;
 
 	SetTargetFPS(60);
 	while (!WindowShouldClose()) {
@@ -243,6 +293,13 @@ int main(void)
 		if (IsKeyReleased(KEY_TAB)) debug = !debug;
 		events(deltaTime, &meteoroids, &saucers);
 
+		std::list<Explosion>::iterator blast_it;
+		for (blast_it = explosions.begin(); blast_it != explosions.end(); ) {
+			blast_it->Wait(deltaTime, explosionSpritesAmount);
+			if (blast_it->index == -1) explosions.erase(blast_it++);
+			else blast_it++;
+		}
+
 		std::list<PlayerBullet>::iterator pbullets_it;
 		std::list<EnemyUFO>::iterator ufo_it;
 		for (ufo_it = saucers.begin(); ufo_it != saucers.end(); ) {
@@ -258,6 +315,7 @@ int main(void)
 			}
 			if (playerBulletCollission) {
 				playerBulletCollission = false;
+				explosions.emplace_back(ufo_it->coords);
 				saucers.erase(ufo_it++);
 				continue;
 			}
@@ -313,15 +371,18 @@ int main(void)
 			// Player
 			player.Draw(playerSprites, debug);
 			// UFO
-			for (ufo_it = saucers.begin(); ufo_it != saucers.end(); ufo_it++)
+			for (ufo_it = saucers.begin(); ufo_it != saucers.end(); ++ufo_it)
 				ufo_it->Draw(ufoEnemySprites, debug);
 			// Meteoroid
-			for (meteor_it = meteoroids.begin(); meteor_it != meteoroids.end(); meteor_it++)
+			for (meteor_it = meteoroids.begin(); meteor_it != meteoroids.end(); ++meteor_it)
 				meteor_it->Draw(meteoroidSprite, debug);
+			// Explosions
+			for (blast_it = explosions.begin(); blast_it != explosions.end(); ++blast_it)
+				blast_it->Draw(explosionSprites);
 			// Player's bullets
 			player.DrawAllBullets();
 			// Enemy's bullets
-			for (ebullets_it = enemyBullets.begin(); ebullets_it != enemyBullets.end(); ebullets_it++)
+			for (ebullets_it = enemyBullets.begin(); ebullets_it != enemyBullets.end(); ++ebullets_it)
 				ebullets_it->Draw();
 			EndMode2D();
 		}
