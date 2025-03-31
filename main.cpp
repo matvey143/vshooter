@@ -244,6 +244,7 @@ int main(void)
 	Texture2D playerSprites[] = {LoadTexture("graphics/player-1.png"), LoadTexture("graphics/player-2.png")};
 	int lives = 5;
 	bool debug = false;
+	bool mainMenu = true;
 
 	bool playerBulletCollission = false;
 	float bgStarCooldown = 0.0f;
@@ -280,152 +281,166 @@ int main(void)
 
 	SetTargetFPS(60);
 	while (!WindowShouldClose()) {
-		// Time passed between frames.
-		// Can be used to make things more consistant between frames.
-		float deltaTime = GetFrameTime();
-		player.ChangeSprite(deltaTime);
-		// Player movement, restricted by borders of screen
-		player.Move(deltaTime);
-		player.Fire(deltaTime);
-		// Moving bullets. They are removed if they move outside window.
-		player.MoveAllBullets(deltaTime);
+		if (mainMenu) {
+			if (IsKeyReleased(KEY_ENTER)) mainMenu = false;
+			BeginDrawing();
+			{
+				ClearBackground(BLACK);
+				DrawTextEx(titleFont, "VShooter", {250.0f, 200.0f}, 32.0f, 0.0f, WHITE);
+			}
+			EndDrawing();
+		}
+		else {
+			// Time passed between frames.
+			// Can be used to make things more consistant between frames.
+			float deltaTime = GetFrameTime();
+			player.ChangeSprite(deltaTime);
+			// Player movement, restricted by borders of screen
+			player.Move(deltaTime);
+			player.Fire(deltaTime);
+			// Moving bullets. They are removed if they move outside window.
+			player.MoveAllBullets(deltaTime);
 		
-		if (IsKeyReleased(KEY_TAB)) debug = !debug;
-		events(deltaTime, &meteoroids, &saucers);
+			if (IsKeyReleased(KEY_TAB)) debug = !debug;
+			events(deltaTime, &meteoroids, &saucers);
 
-		std::list<Explosion>::iterator blast_it;
-		for (blast_it = explosions.begin(); blast_it != explosions.end(); ) {
-			blast_it->Wait(deltaTime, explosionSpritesAmount);
-			if (blast_it->index == -1) explosions.erase(blast_it++);
-			else blast_it++;
-		}
+			std::list<Explosion>::iterator blast_it;
+			for (blast_it = explosions.begin(); blast_it != explosions.end(); ) {
+				blast_it->Wait(deltaTime, explosionSpritesAmount);
+				if (blast_it->index == -1) explosions.erase(blast_it++);
+				else blast_it++;
+			}
 
-		std::list<PlayerBullet>::iterator pbullets_it;
-		std::list<EnemyUFO>::iterator ufo_it;
-		for (ufo_it = saucers.begin(); ufo_it != saucers.end(); ) {
-			ufo_it->Move(deltaTime);
-			if (ufo_it->CollisionCheck(player.hitbox) && !player.isHit) player.Hit();
-			// Collision checks for player's bullets.
-			for (pbullets_it = player.bullets.begin(); pbullets_it != player.bullets.end(); pbullets_it++) {
-				if (ufo_it->CollisionCheck({pbullets_it->coords.x, pbullets_it->coords.y, pbullets_it->size.x, pbullets_it->size.y})) {
-					playerBulletCollission = true;
-					player.bullets.erase(pbullets_it++);
-					break;
+			std::list<PlayerBullet>::iterator pbullets_it;
+			std::list<EnemyUFO>::iterator ufo_it;
+			for (ufo_it = saucers.begin(); ufo_it != saucers.end(); ) {
+				ufo_it->Move(deltaTime);
+				if (ufo_it->CollisionCheck(player.hitbox) && !player.isHit) player.Hit();
+				// Collision checks for player's bullets.
+				for (pbullets_it = player.bullets.begin(); pbullets_it != player.bullets.end(); pbullets_it++) {
+					if (ufo_it->CollisionCheck({pbullets_it->coords.x, pbullets_it->coords.y, pbullets_it->size.x, pbullets_it->size.y})) {
+						playerBulletCollission = true;
+						player.bullets.erase(pbullets_it++);
+						break;
+					}
 				}
-			}
-			if (playerBulletCollission) {
-				playerBulletCollission = false;
-				explosions.emplace_back(ufo_it->coords);
-				if (score < maxScore - 200) score += 200;
-				else score = maxScore;
-				saucers.erase(ufo_it++);
-				continue;
-			}
-			ufo_it->Shoot(deltaTime, &enemyBullets);
-			ufo_it->ChangeSprite(deltaTime);
-			if (ufo_it->hitbox.y + ufo_it->hitbox.height <= 0.0f) saucers.erase(ufo_it++);
-			else ufo_it++;
-		}
-
-		std::list<Meteoroid>::iterator meteor_it;
-		for (meteor_it = meteoroids.begin(); meteor_it != meteoroids.end(); ) {
-			meteor_it->Move(deltaTime);
-			if (meteor_it->CollisionCheck(player.hitbox) && !player.isHit) player.Hit();
-			// Player bullet collsion checks.
-			for (pbullets_it = player.bullets.begin(); pbullets_it != player.bullets.end(); pbullets_it++) {
-				if (meteor_it->CollisionCheck((Rectangle){pbullets_it->coords.x, pbullets_it->coords.y, pbullets_it->size.x, pbullets_it->size.y})) {
-					playerBulletCollission = true;
-					player.bullets.erase(pbullets_it++);
-					break;
+				if (playerBulletCollission) {
+					playerBulletCollission = false;
+					explosions.emplace_back(ufo_it->coords);
+					if (score < maxScore - 200) score += 200;
+					else score = maxScore;
+					saucers.erase(ufo_it++);
+					continue;
 				}
+				ufo_it->Shoot(deltaTime, &enemyBullets);
+				ufo_it->ChangeSprite(deltaTime);
+				if (ufo_it->hitbox.y + ufo_it->hitbox.height <= 0.0f) saucers.erase(ufo_it++);
+				else ufo_it++;
 			}
-			if (playerBulletCollission) {
-				playerBulletCollission = false;
-				explosions.emplace_back((Vector2){meteor_it->coords.x - meteor_it->radius, meteor_it->coords.y - meteor_it->radius});
-				if (score < maxScore - 100) score += 100;
-				else score = maxScore;
-				meteoroids.erase(meteor_it++);
-				continue;
+
+			std::list<Meteoroid>::iterator meteor_it;
+			for (meteor_it = meteoroids.begin(); meteor_it != meteoroids.end(); ) {
+				meteor_it->Move(deltaTime);
+				if (meteor_it->CollisionCheck(player.hitbox) && !player.isHit) player.Hit();
+				// Player bullet collsion checks.
+				for (pbullets_it = player.bullets.begin(); pbullets_it != player.bullets.end(); pbullets_it++) {
+					if (meteor_it->CollisionCheck((Rectangle){pbullets_it->coords.x, pbullets_it->coords.y, pbullets_it->size.x, pbullets_it->size.y})) {
+						playerBulletCollission = true;
+						player.bullets.erase(pbullets_it++);
+						break;
+					}
+				}
+				if (playerBulletCollission) {
+					playerBulletCollission = false;
+					explosions.emplace_back((Vector2){meteor_it->coords.x - meteor_it->radius, meteor_it->coords.y - meteor_it->radius});
+					if (score < maxScore - 100) score += 100;
+					else score = maxScore;
+					meteoroids.erase(meteor_it++);
+					continue;
+				}
+				if (meteor_it->coords.y + meteor_it->radius <= 0.0f) meteoroids.erase(meteor_it++);
+				else meteor_it++;
 			}
-			if (meteor_it->coords.y + meteor_it->radius <= 0.0f) meteoroids.erase(meteor_it++);
-			else meteor_it++;
-		}
 
-		if (bgStarCooldown >= 0.5f) {
-			stars.emplace_back();
-			bgStarCooldown = 0.0f;
-		}
-		else bgStarCooldown += deltaTime;
-		std::list<BgStar>::iterator it;
-		for (it = stars.begin(); it != stars.end(); ) {
-			it->Move(deltaTime);
-			if (it->coords.y <= 0.0f)
-				stars.erase(it++);
-			else it++;
-		}
-		std::list<EnemyBullet>::iterator ebullets_it;
-		for (ebullets_it = enemyBullets.begin(); ebullets_it != enemyBullets.end(); ) {
-			ebullets_it->Move(deltaTime);
-			if (ebullets_it->CollisionCheck(player.hitbox) && !player.isHit) player.Hit();
-			if (ebullets_it->coords.y + ebullets_it->size.y <= 0.0f)
-				enemyBullets.erase(ebullets_it++);
-			else ebullets_it++;
-		}
-		// Invulnerability time
-		player.WaitInvul(deltaTime);
+			if (bgStarCooldown >= 0.5f) {
+				stars.emplace_back();
+				bgStarCooldown = 0.0f;
+			}
+			else bgStarCooldown += deltaTime;
+			std::list<BgStar>::iterator it;
+			for (it = stars.begin(); it != stars.end(); ) {
+				it->Move(deltaTime);
+				if (it->coords.y <= 0.0f)
+					stars.erase(it++);
+				else it++;
+			}
+			std::list<EnemyBullet>::iterator ebullets_it;
+			for (ebullets_it = enemyBullets.begin(); ebullets_it != enemyBullets.end(); ) {
+				ebullets_it->Move(deltaTime);
+				if (ebullets_it->CollisionCheck(player.hitbox) && !player.isHit) player.Hit();
+				if (ebullets_it->coords.y + ebullets_it->size.y <= 0.0f)
+					enemyBullets.erase(ebullets_it++);
+				else ebullets_it++;
+			}
+			// Invulnerability time
+			player.WaitInvul(deltaTime);
 
-		if (player.lives < 0) gameOver(&score, &player);
-		char scoreString[13];
-		std::snprintf(scoreString, 13, "%012llu", score);
+			if (player.lives < 0) {
+				gameOver(&score, &player);
+				mainMenu = true;
+			}
+			char scoreString[13];
+			std::snprintf(scoreString, 13, "%012llu", score);
 
-		BeginTextureMode(camTexture);
-		{
-			// It should be like a pretty dark shade of blue.
-			ClearBackground({6, 6, 61, 255});
-			BeginMode2D(camera);
-			for (it = stars.begin(); it != stars.end(); ++it)
-				it->Draw();
-			// Player
-			player.Draw(playerSprites, debug);
-			// UFO
-			for (ufo_it = saucers.begin(); ufo_it != saucers.end(); ++ufo_it)
-				ufo_it->Draw(ufoEnemySprites, debug);
-			// Meteoroid
-			for (meteor_it = meteoroids.begin(); meteor_it != meteoroids.end(); ++meteor_it)
-				meteor_it->Draw(meteoroidSprite, debug);
-			// Explosions
-			for (blast_it = explosions.begin(); blast_it != explosions.end(); ++blast_it)
-				blast_it->Draw(explosionSprites);
-			// Player's bullets
-			player.DrawAllBullets();
-			// Enemy's bullets
-			for (ebullets_it = enemyBullets.begin(); ebullets_it != enemyBullets.end(); ++ebullets_it)
-				ebullets_it->Draw();
-			EndMode2D();
-		}
-		EndTextureMode();
+			BeginTextureMode(camTexture);
+			{
+				// It should be like a pretty dark shade of blue.
+				ClearBackground({6, 6, 61, 255});
+				BeginMode2D(camera);
+				for (it = stars.begin(); it != stars.end(); ++it)
+					it->Draw();
+				// Player
+				player.Draw(playerSprites, debug);
+				// UFO
+				for (ufo_it = saucers.begin(); ufo_it != saucers.end(); ++ufo_it)
+					ufo_it->Draw(ufoEnemySprites, debug);
+				// Meteoroid
+				for (meteor_it = meteoroids.begin(); meteor_it != meteoroids.end(); ++meteor_it)
+					meteor_it->Draw(meteoroidSprite, debug);
+				// Explosions
+				for (blast_it = explosions.begin(); blast_it != explosions.end(); ++blast_it)
+					blast_it->Draw(explosionSprites);
+				// Player's bullets
+				player.DrawAllBullets();
+				// Enemy's bullets
+				for (ebullets_it = enemyBullets.begin(); ebullets_it != enemyBullets.end(); ++ebullets_it)
+					ebullets_it->Draw();
+				EndMode2D();
+			}
+			EndTextureMode();
 
-		BeginDrawing();
-		{
-			ClearBackground(WHITE);
-			// Background
-			DrawRectangleGradientV(0, 0, 640, 480, RED, PINK);
-			// Title
-			DrawTextEx(titleFont, "VShooter", {padding * 3 + cameraX, padding}, 42.0, 0.0, WHITE);
-			// Game screen
-			DrawTexture(camTexture.texture, padding, padding, WHITE);
-			// Score
-			constexpr float xScorePadding = padding * 3 + cameraX;
-			constexpr float yScorePadding = padding * 3;
-			DrawTextEx(scoreFont, u8"Очки", {xScorePadding, yScorePadding - padding}, 32.0f, 0.0f, WHITE);
-			DrawRectangleV({xScorePadding, yScorePadding}, scoreSize, BLACK);
-			DrawTextEx(scoreFont, scoreString, {xScorePadding, yScorePadding}, 32.0f, 0.0f, WHITE);
-			// Lives
-			DrawTextEx(scoreFont, u8"Жизни", {xScorePadding, padding * 4}, 32.0f, 0.0f, WHITE);
-			for (int i = 0; i < player.lives; i++)
-				DrawTexture(playerSprites[0], xScorePadding + padding * i, padding * 5, WHITE);
+			BeginDrawing();
+			{
+				ClearBackground(WHITE);
+				// Background
+				DrawRectangleGradientV(0, 0, 640, 480, RED, PINK);
+				// Title
+				DrawTextEx(titleFont, "VShooter", {padding * 3 + cameraX, padding}, 42.0, 0.0, WHITE);
+				// Game screen
+				DrawTexture(camTexture.texture, padding, padding, WHITE);
+				// Score
+				constexpr float xScorePadding = padding * 3 + cameraX;
+				constexpr float yScorePadding = padding * 3;
+				DrawTextEx(scoreFont, u8"Очки", {xScorePadding, yScorePadding - padding}, 32.0f, 0.0f, WHITE);
+				DrawRectangleV({xScorePadding, yScorePadding}, scoreSize, BLACK);
+				DrawTextEx(scoreFont, scoreString, {xScorePadding, yScorePadding}, 32.0f, 0.0f, WHITE);
+				// Lives
+				DrawTextEx(scoreFont, u8"Жизни", {xScorePadding, padding * 4}, 32.0f, 0.0f, WHITE);
+				for (int i = 0; i < player.lives; i++)
+					DrawTexture(playerSprites[0], xScorePadding + padding * i, padding * 5, WHITE);
+			}
+			EndDrawing();
 		}
-		EndDrawing();
 	}
 	// Quiting the program
 	UnloadFont(scoreFont);
