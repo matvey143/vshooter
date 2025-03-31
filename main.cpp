@@ -282,11 +282,15 @@ int main(void)
 	SetTargetFPS(60);
 	while (!WindowShouldClose()) {
 		if (mainMenu) {
+			Vector2 titleSize = MeasureTextEx(titleFont, "VShooter", 32.0f, 0.0f);
+			int pressEnterSize = MeasureText("Press \"ENTER\" to begin.", 32);
 			if (IsKeyReleased(KEY_ENTER)) mainMenu = false;
 			BeginDrawing();
 			{
 				ClearBackground(BLACK);
-				DrawTextEx(titleFont, "VShooter", {250.0f, 200.0f}, 32.0f, 0.0f, WHITE);
+				// Assuming it is 640x480.
+				DrawTextEx(titleFont, "VShooter", {320.0f - titleSize.x / 2.0f, 200.0f}, 32.0f, 0.0f, WHITE);
+				DrawText("Press \"ENTER\" to begin.", 320 - pressEnterSize / 2, 400, 32, WHITE);
 			}
 			EndDrawing();
 		}
