@@ -123,13 +123,15 @@ public:
 		hitbox.x = coords.x + xOffset;
 		hitbox.y = coords.y + yOffset; 
 	}
-	void Fire(float deltaTime)
+	void Fire(float deltaTime, uint64_t *score)
 	{
 		if (IsKeyDown(KEY_Z) && shootCooldown <= 0.0f) {
 			// Limits playe to only 4 shots per second.
 			shootCooldown = 0.25f;
 			// Construct class member at the end of list.
 			bullets.emplace_back((Vector2) {hitbox.x + (hitbox.width / 2.0f), hitbox.y});
+			// Punishing player for spamming shot button
+			if(*score > 0) *score -= 1;
 		}
 		else {
 			if (shootCooldown > 0.0f) shootCooldown -= deltaTime;
@@ -301,7 +303,7 @@ int main(void)
 			player.ChangeSprite(deltaTime);
 			// Player movement, restricted by borders of screen
 			player.Move(deltaTime);
-			player.Fire(deltaTime);
+			player.Fire(deltaTime, &score);
 			// Moving bullets. They are removed if they move outside window.
 			player.MoveAllBullets(deltaTime);
 		
