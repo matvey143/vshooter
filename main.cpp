@@ -316,6 +316,8 @@ int main(void)
 			if (playerBulletCollission) {
 				playerBulletCollission = false;
 				explosions.emplace_back(ufo_it->coords);
+				if (score < maxScore - 200) score += 200;
+				else score = maxScore;
 				saucers.erase(ufo_it++);
 				continue;
 			}
@@ -340,6 +342,8 @@ int main(void)
 			if (playerBulletCollission) {
 				playerBulletCollission = false;
 				explosions.emplace_back((Vector2){meteor_it->coords.x - meteor_it->radius, meteor_it->coords.y - meteor_it->radius});
+				if (score < maxScore - 100) score += 100;
+				else score = maxScore;
 				meteoroids.erase(meteor_it++);
 				continue;
 			}
@@ -370,7 +374,6 @@ int main(void)
 		// Invulnerability time
 		player.WaitInvul(deltaTime);
 
-		if (score < maxScore) score++;
 		if (player.lives < 0) gameOver(&score, &player);
 		char scoreString[13];
 		std::snprintf(scoreString, 13, "%012llu", score);
