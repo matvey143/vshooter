@@ -441,10 +441,9 @@ int main(void)
 				DrawTexture(camTexture.texture, padding, padding, WHITE);
 				// Score
 				constexpr float xScorePadding = padding * 3 + cameraX;
-				constexpr float yScorePadding = padding * 3;
-				DrawTextEx(scoreFont, u8"Очки", {xScorePadding, yScorePadding - padding}, 32.0f, 0.0f, WHITE);
-				DrawRectangleV({xScorePadding, yScorePadding}, scoreSize, BLACK);
-				DrawTextEx(scoreFont, scoreString, {xScorePadding, yScorePadding}, 32.0f, 0.0f, WHITE);
+				DrawTextEx(scoreFont, u8"Очки", {xScorePadding, padding * 2}, 32.0f, 0.0f, WHITE);
+				DrawRectangleV({xScorePadding, padding * 3}, scoreSize, BLACK);
+				DrawTextEx(scoreFont, scoreString, {xScorePadding, padding * 3}, 32.0f, 0.0f, WHITE);
 				// High-score
 				DrawTextEx(scoreFont, u8"Рекорд", {xScorePadding, padding * 4}, 32.0f, 0.0f, WHITE);
 				DrawRectangleV({xScorePadding, padding * 5}, scoreSize, BLACK);
