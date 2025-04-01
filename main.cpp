@@ -94,6 +94,12 @@ public:
 			}
 		}
 	}
+	void GameOver(uint64_t *score)
+	{
+		*score = 0;
+		lives = 5;
+		coords = {150.0f, 200.0f};
+	}
 	void ChangeSprite(float deltaTime)
 	{
 		constexpr static float changeTime = 1.0 / (sizeof (PlayerFrame) / sizeof PLAYER_FRAME_NORMAL_1) / 2.0f;
@@ -214,16 +220,12 @@ public:
 	}
 };
 
-void gameOver(uint64_t *score, Player *player)
-{
-	*score = 0;
-	player->lives = 5;
-}
+
 
 int main(void)
 {
 	std::list<EnemyBullet> enemyBullets;
-	uint64_t score = 0;
+	uint64_t score = 0, highScore = 0;
 	constexpr uint64_t maxScore = 999'999'999'999;
 	InitWindow(640, 480, "vshooter");
 
@@ -392,11 +394,14 @@ int main(void)
 			player.WaitInvul(deltaTime);
 
 			if (player.lives < 0) {
-				gameOver(&score, &player);
+				player.GameOver(&score);
 				mainMenu = true;
 			}
+			if (highScore <= score) highScore = score;
 			char scoreString[13];
+			char highScoreString[13];
 			std::snprintf(scoreString, 13, "%012llu", score);
+			std::snprintf(highScoreString, 13, "%012llu", highScore);
 
 			BeginTextureMode(camTexture);
 			{
@@ -440,10 +445,14 @@ int main(void)
 				DrawTextEx(scoreFont, u8"Очки", {xScorePadding, yScorePadding - padding}, 32.0f, 0.0f, WHITE);
 				DrawRectangleV({xScorePadding, yScorePadding}, scoreSize, BLACK);
 				DrawTextEx(scoreFont, scoreString, {xScorePadding, yScorePadding}, 32.0f, 0.0f, WHITE);
+				// High-score
+				DrawTextEx(scoreFont, u8"Рекорд", {xScorePadding, padding * 4}, 32.0f, 0.0f, WHITE);
+				DrawRectangleV({xScorePadding, padding * 5}, scoreSize, BLACK);
+				DrawTextEx(scoreFont, highScoreString, {xScorePadding, padding * 5}, 32.0f, 0.0f, WHITE);
 				// Lives
-				DrawTextEx(scoreFont, u8"Жизни", {xScorePadding, padding * 4}, 32.0f, 0.0f, WHITE);
+				DrawTextEx(scoreFont, u8"Жизни", {xScorePadding, padding * 6}, 32.0f, 0.0f, WHITE);
 				for (int i = 0; i < player.lives; i++)
-					DrawTexture(playerSprites[0], xScorePadding + padding * i, padding * 5, WHITE);
+					DrawTexture(playerSprites[0], xScorePadding + padding * i, padding * 7, WHITE);
 			}
 			EndDrawing();
 		}
