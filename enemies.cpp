@@ -70,11 +70,11 @@ void EnemyUFO::ChangeSprite(float deltaTime)
 		spriteTime = 0.0f;
 	}
 }
-void EnemyUFO::Shoot(float deltaTime, std::list<EnemyBullet> *enemyBullets)
+void EnemyUFO::Shoot(float deltaTime, std::list<EnemyBullet> &enemyBullets)
 {
 	if (shootTime >= shootCooldown) {
 		shootTime = 0.0f;
-		enemyBullets->emplace_back((Vector2){coords.x + hitbox.width / 2.0f, coords.y});
+		enemyBullets.emplace_back((Vector2){coords.x + hitbox.width / 2.0f, coords.y});
 	}
 	else shootTime += deltaTime;
 }

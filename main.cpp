@@ -96,9 +96,9 @@ public:
 			}
 		}
 	}
-	void GameOver(uint64_t *score)
+	void GameOver(uint64_t &score)
 	{
-		*score = 0;
+		score = 0;
 		seconds = 0;
 		lives = 5;
 		secondFraction = 0.0f;
@@ -133,7 +133,7 @@ public:
 		hitbox.x = coords.x + xOffset;
 		hitbox.y = coords.y + yOffset; 
 	}
-	void Fire(float deltaTime, uint64_t *score)
+	void Fire(float deltaTime, uint64_t &score)
 	{
 		if (IsKeyDown(KEY_Z) && shootCooldown <= 0.0f) {
 			// Limits playe to only 4 shots per second.
@@ -141,7 +141,7 @@ public:
 			// Construct class member at the end of list.
 			bullets.emplace_back((Vector2) {hitbox.x + (hitbox.width / 2.0f), hitbox.y});
 			// Punishing player for spamming shot button
-			if(*score > 0) *score -= 1;
+			if(score > 0) score -= 1;
 		}
 		else {
 			if (shootCooldown > 0.0f) shootCooldown -= deltaTime;
@@ -209,7 +209,7 @@ public:
 
 std::uniform_real_distribution<float> speedXMeteoroid(-20.0f, 20.0f);
 std::uniform_real_distribution<float> speedYMeteoroid(-100.0f, -50.0f);
-void spawn(float deltaTime, std::list<Meteoroid> *meteoroid, std::list<EnemyUFO> *ufos)
+void spawn(float deltaTime, std::list<Meteoroid> &meteoroid, std::list<EnemyUFO> &ufos)
 {
 	int amount;
 	secondFraction += deltaTime;
@@ -220,16 +220,16 @@ void spawn(float deltaTime, std::list<Meteoroid> *meteoroid, std::list<EnemyUFO>
 		if (seconds % 3 == 0) {
 			amount = seconds / 15;
 			Vector2 meteoroidV = (Vector2) {randomX(rng), cameraY};
-			meteoroid->emplace_back(meteoroidV, speedXMeteoroid(rng), speedYMeteoroid(rng));
+			meteoroid.emplace_back(meteoroidV, speedXMeteoroid(rng), speedYMeteoroid(rng));
 			for (int i = 0; i < amount; i++) {
 				meteoroidV.x = randomX(rng);
-				meteoroid->emplace_back(meteoroidV, speedXMeteoroid(rng), speedYMeteoroid(rng));
+				meteoroid.emplace_back(meteoroidV, speedXMeteoroid(rng), speedYMeteoroid(rng));
 			}
 		}
 		if (seconds % 5 == 0) {
-			ufos->emplace_back(randomX(rng), cameraY);
+			ufos.emplace_back(randomX(rng), cameraY);
 			amount = seconds / 25;
-			for (int i = 0; i < amount; i++) ufos->emplace_back(randomX(rng), cameraY);
+			for (int i = 0; i < amount; i++) ufos.emplace_back(randomX(rng), cameraY);
 		}
 	}
 }
@@ -317,12 +317,12 @@ int main(void)
 			player.ChangeSprite(deltaTime);
 			// Player movement, restricted by borders of screen
 			player.Move(deltaTime);
-			player.Fire(deltaTime, &score);
+			player.Fire(deltaTime, score);
 			// Moving bullets. They are removed if they move outside window.
 			player.MoveAllBullets(deltaTime);
 		
 			if (IsKeyReleased(KEY_TAB)) debug = !debug;
-			spawn(deltaTime, &meteoroids, &saucers);
+			spawn(deltaTime, meteoroids, saucers);
 
 			std::list<Explosion>::iterator blast_it;
 			for (blast_it = explosions.begin(); blast_it != explosions.end(); ) {
@@ -352,7 +352,7 @@ int main(void)
 					saucers.erase(ufo_it++);
 					continue;
 				}
-				ufo_it->Shoot(deltaTime, &enemyBullets);
+				ufo_it->Shoot(deltaTime, enemyBullets);
 				ufo_it->ChangeSprite(deltaTime);
 				if (ufo_it->hitbox.y + ufo_it->hitbox.height <= 0.0f) saucers.erase(ufo_it++);
 				else ufo_it++;
@@ -406,7 +406,7 @@ int main(void)
 			player.WaitInvul(deltaTime);
 
 			if (player.lives < 0) {
-				player.GameOver(&score);
+				player.GameOver(score);
 				mainMenu = true;
 			}
 			if (highScore <= score) highScore = score;

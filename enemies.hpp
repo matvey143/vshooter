@@ -54,7 +54,7 @@ public:
 	void Draw(Texture2D *sprites, bool debug);
 	bool CollisionCheck(Rectangle player);
 	void ChangeSprite(float deltaTime);
-	void Shoot(float deltaTime, std::list<EnemyBullet> *enemyBullets);
+	void Shoot(float deltaTime, std::list<EnemyBullet> &enemyBullets);
 	void Move(float deltaTime);
 	EnemyUFO(float newX, float newY);
 };
