@@ -492,6 +492,8 @@ int main(void)
 		UnloadTexture(playerSprites[i]);
 	for (int i = 0; i < sizeof ufoEnemySprites / sizeof ufoEnemySprites[0]; i++)
 		UnloadTexture(ufoEnemySprites[i]);
+	for (int i = 0; i < explosionSpritesAmount; i++)
+		UnloadTexture(explosionSprites[i]);
 	UnloadRenderTexture(camTexture);
 	CloseWindow();
 	return 0;
