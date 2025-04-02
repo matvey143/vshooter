@@ -85,15 +85,11 @@ public:
 	{
 		if (isHit) {
 			DrawTexture(sprites[currentFrame], coords.x, coords.y, RED);
-			if (debug) {
-				DrawRectangleRec(hitbox, HITBOX_COLOR_ALT);
-			}
+			if (debug) DrawRectangleRec(hitbox, HITBOX_COLOR_ALT);
 		}
 		else {
 			DrawTexture(sprites[currentFrame], coords.x, coords.y, WHITE);
-			if (debug) {
-				DrawRectangleRec(hitbox, HITBOX_COLOR);
-			}
+			if (debug) DrawRectangleRec(hitbox, HITBOX_COLOR);
 		}
 	}
 	void GameOver(uint64_t &score)
@@ -257,7 +253,10 @@ int main(void)
 	Player player;
 	player.coords = {150.0, 200.0};
 	float shootCooldown = 0.0f;
-	Texture2D playerSprites[] = {LoadTexture("graphics/player-1.png"), LoadTexture("graphics/player-2.png")};
+	Texture2D playerSprites[] = {
+		LoadTexture("graphics/player-1.png"),
+		LoadTexture("graphics/player-2.png")
+	};
 	int lives = 5;
 	bool debug = false;
 	bool mainMenu = true;
@@ -266,7 +265,10 @@ int main(void)
 	float bgStarCooldown = 0.0f;
 	std::list<BgStar> stars;
 
-	Texture2D ufoEnemySprites[] = {LoadTexture("graphics/ufo-normal1.png"), LoadTexture("graphics/ufo-normal2.png")};
+	Texture2D ufoEnemySprites[] = {
+		LoadTexture("graphics/ufo-normal1.png"),
+		LoadTexture("graphics/ufo-normal2.png")
+	};
 	std::list<EnemyUFO> saucers;
 
 	Texture2D meteoroidSprite = LoadTexture("graphics/meteoroid-1.png");
@@ -338,7 +340,12 @@ int main(void)
 				if (ufo_it->CollisionCheck(player.hitbox) && !player.isHit) player.Hit();
 				// Collision checks for player's bullets.
 				for (pbullets_it = player.bullets.begin(); pbullets_it != player.bullets.end(); pbullets_it++) {
-					if (ufo_it->CollisionCheck({pbullets_it->coords.x, pbullets_it->coords.y, pbullets_it->size.x, pbullets_it->size.y})) {
+					Rectangle pbulletHitbox = (Rectangle) {
+						pbullets_it->coords.x, pbullets_it->coords.y,
+						// Width and Height.
+						pbullets_it->size.x, pbullets_it->size.y
+					};
+					if (ufo_it->CollisionCheck(pbulletHitbox)) {
 						playerBulletCollission = true;
 						player.bullets.erase(pbullets_it++);
 						break;
@@ -364,7 +371,12 @@ int main(void)
 				if (meteor_it->CollisionCheck(player.hitbox) && !player.isHit) player.Hit();
 				// Player bullet collsion checks.
 				for (pbullets_it = player.bullets.begin(); pbullets_it != player.bullets.end(); pbullets_it++) {
-					if (meteor_it->CollisionCheck((Rectangle){pbullets_it->coords.x, pbullets_it->coords.y, pbullets_it->size.x, pbullets_it->size.y})) {
+					Rectangle pbulletHitbox = (Rectangle) {
+						pbullets_it->coords.x, pbullets_it->coords.y,
+						// Width and height
+						pbullets_it->size.x, pbullets_it->size.y
+					};
+					if (meteor_it->CollisionCheck(pbulletHitbox)) {
 						playerBulletCollission = true;
 						player.bullets.erase(pbullets_it++);
 						break;
@@ -372,7 +384,11 @@ int main(void)
 				}
 				if (playerBulletCollission) {
 					playerBulletCollission = false;
-					explosions.emplace_back((Vector2){meteor_it->coords.x - meteor_it->radius, meteor_it->coords.y - meteor_it->radius});
+					Vector2 temp = (Vector2) {
+						meteor_it->coords.x - meteor_it->radius,
+						meteor_it->coords.y - meteor_it->radius
+					};
+					explosions.emplace_back(temp);
 					if (score < maxScore - 100) score += 100;
 					else score = maxScore;
 					meteoroids.erase(meteor_it++);
