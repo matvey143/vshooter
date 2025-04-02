@@ -423,6 +423,11 @@ int main(void)
 			if (player.lives < 0) {
 				player.GameOver(score);
 				mainMenu = true;
+				enemyBullets.clear();
+				meteoroids.clear();
+				saucers.clear();
+				player.bullets.clear();
+				explosions.clear();
 			}
 			if (highScore <= score) highScore = score;
 			char scoreString[13];
