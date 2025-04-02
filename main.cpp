@@ -8,6 +8,8 @@
 #include "globalVariables.hpp"
 
 constexpr auto cameraX = 300, cameraY = 400;
+unsigned long seconds = 0;
+float secondFraction = 0.0f;
 
 std::random_device randDevice;
 std::mt19937 rng(randDevice());
@@ -97,7 +99,9 @@ public:
 	void GameOver(uint64_t *score)
 	{
 		*score = 0;
+		seconds = 0;
 		lives = 5;
+		secondFraction = 0.0f;
 		coords = {150.0f, 200.0f};
 	}
 	void ChangeSprite(float deltaTime)
@@ -175,35 +179,6 @@ public:
 	}
 };
 
-std::uniform_real_distribution<float> speedXMeteoroid(-20.0f, 20.0f);
-std::uniform_real_distribution<float> speedYMeteoroid(-100.0f, -50.0f);
-void spawn(float deltaTime, std::list<Meteoroid> *meteoroid, std::list<EnemyUFO> *ufos)
-{
-	static unsigned long seconds = 0;
-	int amount;
-	static float time = 0.0f;
-	time += deltaTime;
-	if (time >= 1.0f) {
-		time = 0.0f;
-		seconds++;
-		// Should spawn enemies every X seconds.
-		if (seconds % 3 == 0) {
-			amount = seconds / 15;
-			Vector2 meteoroidV = (Vector2) {randomX(rng), cameraY};
-			meteoroid->emplace_back(meteoroidV, speedXMeteoroid(rng), speedYMeteoroid(rng));
-			for (int i = 0; i < amount; i++) {
-				meteoroidV.x = randomX(rng);
-				meteoroid->emplace_back(meteoroidV, speedXMeteoroid(rng), speedYMeteoroid(rng));
-			}
-		}
-		if (seconds % 5 == 0) {
-			ufos->emplace_back(randomX(rng), cameraY);
-			amount = seconds / 25;
-			for (int i = 0; i < amount; i++) ufos->emplace_back(randomX(rng), cameraY);
-		}
-	}
-}
-
 class Explosion {
 private:
 	float time = 0.0f;
@@ -231,6 +206,33 @@ public:
 		y = (int) coords.y;
 	}
 };
+
+std::uniform_real_distribution<float> speedXMeteoroid(-20.0f, 20.0f);
+std::uniform_real_distribution<float> speedYMeteoroid(-100.0f, -50.0f);
+void spawn(float deltaTime, std::list<Meteoroid> *meteoroid, std::list<EnemyUFO> *ufos)
+{
+	int amount;
+	secondFraction += deltaTime;
+	if (secondFraction >= 1.0f) {
+		secondFraction = 0.0f;
+		seconds++;
+		// Should spawn enemies every X seconds.
+		if (seconds % 3 == 0) {
+			amount = seconds / 15;
+			Vector2 meteoroidV = (Vector2) {randomX(rng), cameraY};
+			meteoroid->emplace_back(meteoroidV, speedXMeteoroid(rng), speedYMeteoroid(rng));
+			for (int i = 0; i < amount; i++) {
+				meteoroidV.x = randomX(rng);
+				meteoroid->emplace_back(meteoroidV, speedXMeteoroid(rng), speedYMeteoroid(rng));
+			}
+		}
+		if (seconds % 5 == 0) {
+			ufos->emplace_back(randomX(rng), cameraY);
+			amount = seconds / 25;
+			for (int i = 0; i < amount; i++) ufos->emplace_back(randomX(rng), cameraY);
+		}
+	}
+}
 
 int main(void)
 {
