@@ -257,7 +257,6 @@ int main(void)
 		LoadTexture("graphics/player-1.png"),
 		LoadTexture("graphics/player-2.png")
 	};
-	int lives = 5;
 	bool debug = false;
 	bool mainMenu = true;
 
