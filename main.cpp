@@ -290,8 +290,7 @@ int main(void)
 		LoadTexture("graphics/explosion_13.png"),
 		LoadTexture("graphics/explosion_14.png"),
 		LoadTexture("graphics/explosion_15.png"),
-		LoadTexture("graphics/explosion_16.png"),
-		LoadTexture("graphics/explosion_17.png")
+		LoadTexture("graphics/explosion_16.png")
 	};
 	constexpr int explosionSpritesAmount = sizeof explosionSprites / sizeof explosionSprites[0];
 	std::list<Explosion> explosions;
