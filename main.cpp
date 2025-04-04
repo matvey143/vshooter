@@ -98,7 +98,7 @@ public:
 		seconds = 0;
 		lives = 5;
 		secondFraction = 0.0f;
-		coords = {150.0f, 200.0f};
+		coords = {150.0f, 50.0f};
 	}
 	void ChangeSprite(float deltaTime)
 	{
@@ -251,7 +251,7 @@ int main(void)
 	Vector2 scoreSize = MeasureTextEx(scoreFont, "000000000000", 32.0, 0.0);
 
 	Player player;
-	player.coords = {150.0, 200.0};
+	player.coords = {150.0, 50.0};
 	float shootCooldown = 0.0f;
 	Texture2D playerSprites[] = {
 		LoadTexture("graphics/player-1.png"),
