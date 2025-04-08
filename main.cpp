@@ -78,7 +78,8 @@ private:
 public:
 	Rectangle hitbox = {0.0f, 0.0f, 6.0f, 10.0f};
 	bool isHit = false;
-	int lives = 5;
+	static constexpr int maxLives = 5;
+	int lives = maxLives;
 	Vector2 coords;
 	std::list<PlayerBullet> bullets;
 	void Draw(Texture2D *sprites, bool debug)
@@ -92,11 +93,10 @@ public:
 			if (debug) DrawRectangleRec(hitbox, HITBOX_COLOR);
 		}
 	}
-	void GameOver(uint64_t &score)
+	void GameOver()
 	{
-		score = 0;
 		seconds = 0;
-		lives = 5;
+		lives = maxLives;
 		secondFraction = 0.0f;
 		coords = {150.0f, 50.0f};
 	}
@@ -234,6 +234,13 @@ int main(void)
 {
 	std::list<EnemyBullet> enemyBullets;
 	uint64_t score = 0, highScore = 0;
+	/*
+	 * Player receives extra life than achieving specific score.
+	 * After that he gains new life when achieving previous requirement *2.
+	 * But this requirement resets to original value in case of game over.
+	 */
+	constexpr uint64_t score1up_original = 10'000;
+	uint64_t score1up = score1up_original;
 	constexpr uint64_t maxScore = 999'999'999'999;
 	InitWindow(640, 480, "vshooter");
 
@@ -418,9 +425,16 @@ int main(void)
 			}
 			// Invulnerability time
 			player.WaitInvul(deltaTime);
+			// Extra lives.
+			if (score >= score1up) {
+				score1up *= 2;
+				if (player.lives < player.maxLives) player.lives++;
+			}
 
 			if (player.lives < 0) {
-				player.GameOver(score);
+				player.GameOver();
+				score = 0;
+				score1up = score1up_original;
 				mainMenu = true;
 				enemyBullets.clear();
 				meteoroids.clear();
