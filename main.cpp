@@ -78,8 +78,8 @@ private:
 public:
 	Rectangle hitbox = {0.0f, 0.0f, 6.0f, 10.0f};
 	bool isHit = false;
-	static constexpr int maxLives = 5;
-	int lives = maxLives;
+	static constexpr int livesStart = 5, maxLives = 20;
+	int lives = livesStart;
 	Vector2 coords;
 	std::list<PlayerBullet> bullets;
 	void Draw(Texture2D *sprites, bool debug)
@@ -96,7 +96,7 @@ public:
 	void GameOver()
 	{
 		seconds = 0;
-		lives = maxLives;
+		lives = livesStart;
 		secondFraction = 0.0f;
 		coords = {150.0f, 50.0f};
 	}
@@ -239,7 +239,7 @@ int main(void)
 	 * After that he gains new life when achieving previous requirement *2.
 	 * But this requirement resets to original value in case of game over.
 	 */
-	constexpr uint64_t score1up_original = 10'000;
+	constexpr uint64_t score1up_original = 1'000;
 	uint64_t score1up = score1up_original;
 	constexpr uint64_t maxScore = 999'999'999'999;
 	InitWindow(640, 480, "vshooter");
@@ -495,8 +495,12 @@ int main(void)
 				DrawTextEx(scoreFont, highScoreString, {xScorePadding, padding * 5}, 32.0f, 0.0f, WHITE);
 				// Lives
 				DrawTextEx(scoreFont, u8"Жизни", {xScorePadding, padding * 6}, 32.0f, 0.0f, WHITE);
-				for (int i = 0; i < player.lives; i++)
-					DrawTexture(playerSprites[0], xScorePadding + padding * i, padding * 7, WHITE);
+				// I want lives display span multiple rows.
+				for (int i = 0; i < player.lives; i++) {
+					DrawTexture(playerSprites[0],
+						xScorePadding + padding * (i % 5),
+						padding * 7 + padding * (i / 5), WHITE);
+				}
 			}
 			EndDrawing();
 		}
