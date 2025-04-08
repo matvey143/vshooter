@@ -498,8 +498,9 @@ int main(void)
 				// I want lives display span multiple rows.
 				for (int i = 0; i < player.lives; i++) {
 					DrawTexture(playerSprites[0],
-						xScorePadding + padding * (i % 5),
-						padding * 7 + padding * (i / 5), WHITE);
+						xScorePadding + padding * (i % 5), // X. Column.
+						padding * 7 + padding * (i / 5), // Y. Row.
+						WHITE);
 				}
 			}
 			EndDrawing();
