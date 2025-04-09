@@ -64,13 +64,13 @@ class EnemyAimedProjectile {
 private:
 	Vector2 target;
 	float speed = 70.0f;
-	float radius = 8.0f;
 public:
 	Vector2 coords;
+	float radius = 8.0f;
 	bool CollissionCheck(Rectangle player);
 	void Move(float deltaTime);
 	void Draw(Texture2D sprite, bool debug);
-	EnemyAimedProjectile(Vector2 player);
+	EnemyAimedProjectile(Vector2 source, Vector2 player);
 };
 
 class EnemySpaceship {
@@ -80,16 +80,21 @@ private:
 	float speed = 100.0f;
 	float shootTime = 0.0f;
 	float shootCooldown = 0.5f;
+	float hitTime = 0.0f;
+	static constexpr float hitCooldown = 0.1f;
 public:
 	Vector2 coords;
+	bool isHit = false;
 	float radius = 8.0f;
 	int lives = 2;
 	bool CollisionCheck(Rectangle player);
 	void Draw(Texture2D *sprites, bool debug);
 	void ChangeSprite(float deltaTime);
-	void Shoot(float deltaTime, std::list<EnemyAimedProjectile> &eaProjectiles);
+	void Shoot(Vector2 playerXY, float deltaTime, std::list<EnemyAimedProjectile> &eaProjectiles);
 	void Move(float deltaTime);
-	EnemySpaceship(float newX);
+	void Hit();
+	void waitHit(float deltaTime);
+	EnemySpaceship(float newX, float newY);
 };
 
 #endif

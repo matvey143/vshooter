@@ -205,14 +205,14 @@ public:
 
 std::uniform_real_distribution<float> speedXMeteoroid(-20.0f, 20.0f);
 std::uniform_real_distribution<float> speedYMeteoroid(-100.0f, -50.0f);
-void spawn(float deltaTime, std::list<Meteoroid> &meteoroid, std::list<EnemyUFO> &ufos)
+void spawn(float deltaTime, std::list<Meteoroid> &meteoroid, std::list<EnemyUFO> &ufos, std::list<EnemySpaceship> &spaceships)
 {
 	int amount;
 	secondFraction += deltaTime;
 	if (secondFraction >= 1.0f) {
 		secondFraction = 0.0f;
 		seconds++;
-		// Should spawn enemies every X seconds.
+		// Should spawn enemies every X seconds. Btw should they all spawn on second 0.
 		if (seconds % 3 == 0) {
 			amount = seconds / 15;
 			Vector2 meteoroidV = (Vector2) {randomX(rng), cameraY};
@@ -226,6 +226,10 @@ void spawn(float deltaTime, std::list<Meteoroid> &meteoroid, std::list<EnemyUFO>
 			ufos.emplace_back(randomX(rng), cameraY);
 			amount = seconds / 25;
 			for (int i = 0; i < amount; i++) ufos.emplace_back(randomX(rng), cameraY);
+		}
+		if (seconds % 7 == 0) {
+			amount = seconds / 21;
+			for (int i = 0; i < amount; i++) spaceships.emplace_back(randomX(rng), cameraY);
 		}
 	}
 }
@@ -282,11 +286,13 @@ int main(void)
 	Meteoroid exampleMeteoroid = Meteoroid({100.0f, 100.0f}, 0.0f, 0.0f);
 	
 	Texture2D eprojectileSprite = LoadTexture("graphics/enemy-shot1.png");
+	std::list<EnemyAimedProjectile> eaProjectiles;
 
 	Texture2D espacehipSprites[] = {
 		LoadTexture("graphics/enemy-spaceship_1.png"),
 		LoadTexture("graphics/enemy-spaceship_2.png")
-	}; 
+	};
+	std::list<EnemySpaceship> eSpaceships;
 
 	Texture2D explosionSprites[] = {
 		LoadTexture("graphics/explosion_1.png"),
@@ -336,7 +342,7 @@ int main(void)
 			player.MoveAllBullets(deltaTime);
 		
 			if (IsKeyReleased(KEY_TAB)) debug = !debug;
-			spawn(deltaTime, meteoroids, saucers);
+			spawn(deltaTime, meteoroids, saucers, eSpaceships);
 
 			std::list<Explosion>::iterator blast_it;
 			for (blast_it = explosions.begin(); blast_it != explosions.end(); ) {
@@ -375,6 +381,44 @@ int main(void)
 				ufo_it->ChangeSprite(deltaTime);
 				if (ufo_it->hitbox.y + ufo_it->hitbox.height <= 0.0f) saucers.erase(ufo_it++);
 				else ufo_it++;
+			}
+			// Iterating through enemy spaceships
+			std::list<EnemySpaceship>::iterator es_it;
+			for (es_it = eSpaceships.begin(); es_it != eSpaceships.end(); ) {
+				es_it->Move(deltaTime);
+				for (pbullets_it = player.bullets.begin(); pbullets_it != player.bullets.end(); pbullets_it++) {
+					Rectangle pbulletHitbox = (Rectangle) {
+						pbullets_it->coords.x, pbullets_it->coords.y,
+						// Width and Height.
+						pbullets_it->size.x, pbullets_it->size.y
+					};
+					if (es_it->CollisionCheck(pbulletHitbox) && !es_it->isHit) {
+						if (es_it->lives > 0) {
+							es_it->Hit();
+							player.bullets.erase(pbullets_it++);
+							break;
+						}
+						else {
+							playerBulletCollission = true;
+							player.bullets.erase(pbullets_it++);
+							break;
+						}
+					}
+				}
+				if (playerBulletCollission) {
+					playerBulletCollission = false;
+					explosions.emplace_back(es_it->coords);
+					if (score  < maxScore - 500) score += 500;
+					else score = maxScore;
+					eSpaceships.erase(es_it++);
+					continue;
+				}
+				es_it->Shoot(player.coords, deltaTime, eaProjectiles);
+				es_it->Move(deltaTime);
+				es_it->ChangeSprite(deltaTime);
+				if (!CheckCollisionCircleRec(es_it->coords, es_it->radius, (Rectangle) {0.0f, 0.0f, cameraX, cameraY}))
+					eSpaceships.erase(es_it++);
+				else es_it++;
 			}
 
 			std::list<Meteoroid>::iterator meteor_it;
@@ -430,6 +474,14 @@ int main(void)
 					enemyBullets.erase(ebullets_it++);
 				else ebullets_it++;
 			}
+			std::list<EnemyAimedProjectile>::iterator eap_it;
+			for (eap_it = eaProjectiles.begin(); eap_it != eaProjectiles.end(); ) {
+				eap_it->Move(deltaTime);
+				if (eap_it->CollissionCheck(player.hitbox) && !player.isHit) player.Hit();
+				if (!CheckCollisionCircleRec(eap_it->coords, eap_it->radius, {0.0f, 0.0f, cameraX, cameraY}))
+					eaProjectiles.erase(eap_it++);
+				else eap_it++;
+			}
 			// Invulnerability time
 			player.WaitInvul(deltaTime);
 			// Extra lives.
@@ -467,6 +519,9 @@ int main(void)
 				// UFO
 				for (ufo_it = saucers.begin(); ufo_it != saucers.end(); ++ufo_it)
 					ufo_it->Draw(ufoEnemySprites, debug);
+				// Enemy spaceships.
+				for (es_it = eSpaceships.begin(); es_it != eSpaceships.end(); ++es_it)
+					es_it->Draw(espacehipSprites, debug);
 				// Meteoroid
 				for (meteor_it = meteoroids.begin(); meteor_it != meteoroids.end(); ++meteor_it)
 					meteor_it->Draw(meteoroidSprite, debug);
@@ -478,6 +533,8 @@ int main(void)
 				// Enemy's bullets
 				for (ebullets_it = enemyBullets.begin(); ebullets_it != enemyBullets.end(); ++ebullets_it)
 					ebullets_it->Draw();
+				for (eap_it = eaProjectiles.begin(); eap_it != eaProjectiles.end(); ++eap_it)
+					eap_it->Draw(eprojectileSprite, debug);
 				EndMode2D();
 			}
 			EndTextureMode();

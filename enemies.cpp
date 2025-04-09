@@ -98,6 +98,7 @@ EnemyUFO::EnemyUFO(float newX, float newY)
 	coords.y = newY;
 }
 
+// Class EnemyAimedProjectile
 bool EnemyAimedProjectile::CollissionCheck(Rectangle player)
 {
 	return CheckCollisionCircleRec({coords.x + radius, coords.y + radius}, radius, player);
@@ -114,11 +115,12 @@ void EnemyAimedProjectile::Draw(Texture2D sprite, bool debug)
 	if (debug) DrawCircleV(coords, radius, HITBOX_COLOR_ALT);
 }
 
-EnemyAimedProjectile::EnemyAimedProjectile(Vector2 player)
+EnemyAimedProjectile::EnemyAimedProjectile(Vector2 source, Vector2 player)
 {
 	target = player;
 }
 
+// Class EnemySpaceship
 void EnemySpaceship::ChangeSprite(float deltaTime)
 {
 	frameTime += deltaTime;
@@ -129,6 +131,28 @@ void EnemySpaceship::ChangeSprite(float deltaTime)
 	}
 }
 
+void EnemySpaceship::Move(float deltaTime)
+{
+	coords.y -= speed * deltaTime;
+}
+
+void EnemySpaceship::Shoot(Vector2 playerXY, float deltaTime, std::list<EnemyAimedProjectile> &eaProjectiles)
+{
+	shootTime += deltaTime;
+	if (shootTime >= shootCooldown) {
+		shootTime = 0.0f;
+		eaProjectiles.emplace_back(coords, playerXY);
+	}
+}
+
+void EnemySpaceship::Hit()
+{
+	if (!isHit) {
+		isHit = true;
+		hitTime = hitCooldown;
+	}
+}
+
 bool EnemySpaceship::CollisionCheck(Rectangle player)
 {
 	return CheckCollisionCircleRec(coords, radius, player);
@@ -136,6 +160,18 @@ bool EnemySpaceship::CollisionCheck(Rectangle player)
 
 void EnemySpaceship::Draw(Texture2D *sprites, bool debug)
 {
-	DrawTexture(sprites[currentFrame] , coords.x, coords.y, WHITE);
-	// WIP
+	if (isHit) {
+		DrawTexture(sprites[currentFrame] , coords.x - 16.0f, coords.y - 16.0f, RED);
+		if (debug) DrawCircleV(coords, 8.0f, HITBOX_COLOR_ALT);
+	}
+	else {
+		DrawTexture(sprites[currentFrame] , coords.x - 16.0f, coords.y - 16.0f, WHITE);
+		if (debug) DrawCircleV(coords, 8.0f, HITBOX_COLOR);
+	}
+}
+
+EnemySpaceship::EnemySpaceship(float newX, float newY)
+{
+	coords.x = newX;
+	coords.y = newY;
 }
