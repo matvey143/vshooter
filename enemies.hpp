@@ -1,6 +1,7 @@
 #include "raylib.h"
 #include <list>
 #include "globalVariables.hpp"
+#include "raymath.h"
 
 #ifndef ENEMIES_HPP
 #define ENEMIES_HPP
@@ -58,4 +59,18 @@ public:
 	void Move(float deltaTime);
 	EnemyUFO(float newX, float newY);
 };
+
+class EnemyAimedProjectile {
+private:
+	Vector2 target;
+	float speed = 70.0f;
+	float radius = 8.0f;
+public:
+	Vector2 coords;
+	bool CollissionCheck(Rectangle player);
+	void Move(float deltaTime);
+	void Draw(Texture2D sprite, bool debug);
+	EnemyAimedProjectile(Vector2 player);
+};
+
 #endif

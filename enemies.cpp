@@ -2,6 +2,7 @@
 #include <list>
 #include "globalVariables.hpp"
 #include "enemies.hpp"
+#include "raymath.h"
 
 // Meteoroid class
 void Meteoroid::Draw(Texture2D texture, bool debug)
@@ -50,9 +51,7 @@ EnemyBullet::EnemyBullet(Vector2 newCoords)
 void EnemyUFO::Draw(Texture2D *sprites, bool debug)
 {
 	DrawTexture(sprites[currentFrame], coords.x, coords.y, WHITE);
-	if (debug) {
-		DrawRectangleRec(hitbox, HITBOX_COLOR);
-	}
+	if (debug) DrawRectangleRec(hitbox, HITBOX_COLOR);
 }
 bool EnemyUFO::CollisionCheck(Rectangle player)
 {
@@ -97,4 +96,25 @@ EnemyUFO::EnemyUFO(float newX, float newY)
 {
 	coords.x = newX;
 	coords.y = newY;
+}
+
+EnemyAimedProjectile::CollissionCheck(Rectangle player)
+{
+	return CheckCollisionCircleRec({coords.x + radius, coords.y + radius}, radius, player);
+}
+
+EnemyAimedProjectile::Move(float deltaTime)
+{
+	Vector2MoveTowards(coords, target, speed * deltaTime);
+}
+
+EnemyAimedProjectile::Draw(Texture2D sprite, bool debug)
+{
+	DrawTexture(sprite, coords.x - radius, coords.y - radius, WHITE);
+	if (debug) DrawCircleV(coords, radius, HITBOX_COLOR_ALT);
+}
+
+EnemyAimedProjectile::EnemyAimedProjectile(Vector2 player)
+{
+	target = player;
 }

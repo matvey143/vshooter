@@ -280,6 +280,13 @@ int main(void)
 	Texture2D meteoroidSprite = LoadTexture("graphics/meteoroid-1.png");
 	std::list<Meteoroid> meteoroids;
 	Meteoroid exampleMeteoroid = Meteoroid({100.0f, 100.0f}, 0.0f, 0.0f);
+	
+	Texture2D eprojectileSprite = LoadTexture("graphics/enemy-shot1.png");
+
+	Texture2D espacehipSprites[] = {
+		LoadTexture("graphics/enemy-spaceship_1.png"),
+		LoadTexture("graphics/enemy-spaceship_2.png")
+	}; 
 
 	Texture2D explosionSprites[] = {
 		LoadTexture("graphics/explosion_1.png"),
