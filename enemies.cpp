@@ -98,17 +98,17 @@ EnemyUFO::EnemyUFO(float newX, float newY)
 	coords.y = newY;
 }
 
-EnemyAimedProjectile::CollissionCheck(Rectangle player)
+bool EnemyAimedProjectile::CollissionCheck(Rectangle player)
 {
 	return CheckCollisionCircleRec({coords.x + radius, coords.y + radius}, radius, player);
 }
 
-EnemyAimedProjectile::Move(float deltaTime)
+void EnemyAimedProjectile::Move(float deltaTime)
 {
 	Vector2MoveTowards(coords, target, speed * deltaTime);
 }
 
-EnemyAimedProjectile::Draw(Texture2D sprite, bool debug)
+void EnemyAimedProjectile::Draw(Texture2D sprite, bool debug)
 {
 	DrawTexture(sprite, coords.x - radius, coords.y - radius, WHITE);
 	if (debug) DrawCircleV(coords, radius, HITBOX_COLOR_ALT);
