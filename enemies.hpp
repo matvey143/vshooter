@@ -73,4 +73,23 @@ public:
 	EnemyAimedProjectile(Vector2 player);
 };
 
+class EnemySpaceship {
+private:
+	int currentFrame = 0;
+	float frameTime = 0.0f;
+	float speed = 100.0f;
+	float shootTime = 0.0f;
+	float shootCooldown = 0.5f;
+public:
+	Vector2 coords;
+	float radius = 8.0f;
+	int lives = 2;
+	bool CollisionCheck(Rectangle player);
+	void Draw(Texture2D *sprites, bool debug);
+	void ChangeSprite(float deltaTime);
+	void Shoot(float deltaTime, std::list<EnemyAimedProjectile> &eaProjectiles);
+	void Move(float deltaTime);
+	EnemySpaceship(float newX);
+};
+
 #endif

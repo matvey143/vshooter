@@ -118,3 +118,24 @@ EnemyAimedProjectile::EnemyAimedProjectile(Vector2 player)
 {
 	target = player;
 }
+
+void EnemySpaceship::ChangeSprite(float deltaTime)
+{
+	frameTime += deltaTime;
+	if (frameTime > 0.35f) {
+		if (currentFrame == 0) currentFrame = 1;
+		else if (currentFrame == 1) currentFrame = 0;
+		frameTime = 0.0f;
+	}
+}
+
+bool EnemySpaceship::CollisionCheck(Rectangle player)
+{
+	return CheckCollisionCircleRec(coords, radius, player);
+}
+
+void EnemySpaceship::Draw(Texture2D *sprites, bool debug)
+{
+	DrawTexture(sprites[currentFrame] , coords.x, coords.y, WHITE);
+	// WIP
+}
