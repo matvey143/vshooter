@@ -413,7 +413,7 @@ int main(void)
 					eSpaceships.erase(es_it++);
 					continue;
 				}
-				es_it->Shoot(player.coords, deltaTime, eaProjectiles);
+				es_it->Shoot(Vector2Lerp(es_it->coords, player.coords, 1000.0f), deltaTime, eaProjectiles);
 				es_it->Move(deltaTime);
 				es_it->ChangeSprite(deltaTime);
 				if (!CheckCollisionCircleRec(es_it->coords, es_it->radius, (Rectangle) {0.0f, 0.0f, cameraX, cameraY}))

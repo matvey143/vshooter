@@ -79,7 +79,7 @@ private:
 	float frameTime = 0.0f;
 	float speed = 30.0f;
 	float shootTime = 0.0f;
-	float shootCooldown = 0.5f;
+	float shootCooldown = 2.0f;
 	float hitTime = 0.0f;
 	static constexpr float hitCooldown = 0.1f;
 public:
