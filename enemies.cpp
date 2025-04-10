@@ -146,11 +146,20 @@ void EnemySpaceship::Shoot(Vector2 playerXY, float deltaTime, std::list<EnemyAim
 	}
 }
 
+void EnemySpaceship::WaitHit(float deltaTime)
+{
+	if (isHit) {
+		hitTime -= deltaTime;
+		if (hitTime <= 0.0f) isHit = false;
+	}
+}
+
 void EnemySpaceship::Hit()
 {
 	if (!isHit) {
 		isHit = true;
 		hitTime = hitCooldown;
+		lives--;
 	}
 }
 

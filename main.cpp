@@ -413,6 +413,7 @@ int main(void)
 					eSpaceships.erase(es_it++);
 					continue;
 				}
+				es_it->WaitHit(deltaTime);
 				es_it->Shoot(Vector2Lerp(es_it->coords, player.coords, 1000.0f), deltaTime, eaProjectiles);
 				es_it->Move(deltaTime);
 				es_it->ChangeSprite(deltaTime);
@@ -575,6 +576,9 @@ int main(void)
 	// Quiting the program
 	UnloadFont(scoreFont);
 	UnloadFont(titleFont);
+	UnloadTexture(eprojectileSprite);
+	for (int i = 0; i < sizeof espacehipSprites / sizeof espacehipSprites[0]; i++)
+		UnloadTexture(espacehipSprites[i]);
 	UnloadTexture(meteoroidSprite);
 	for (int i = 0; i < sizeof playerSprites / sizeof playerSprites[0]; i++)
 		UnloadTexture(playerSprites[i]);

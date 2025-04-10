@@ -79,7 +79,7 @@ private:
 	float frameTime = 0.0f;
 	float speed = 30.0f;
 	float shootTime = 0.0f;
-	float shootCooldown = 2.0f;
+	float shootCooldown = 1.0f;
 	float hitTime = 0.0f;
 	static constexpr float hitCooldown = 0.1f;
 public:
@@ -93,7 +93,7 @@ public:
 	void Shoot(Vector2 playerXY, float deltaTime, std::list<EnemyAimedProjectile> &eaProjectiles);
 	void Move(float deltaTime);
 	void Hit();
-	void waitHit(float deltaTime);
+	void WaitHit(float deltaTime);
 	EnemySpaceship(float newX, float newY);
 };
 
