@@ -28,6 +28,7 @@ Meteoroid::Meteoroid(Vector2 coordsNew, float hSpeedNew, float vSpeedNew)
 	hSpeed = hSpeedNew;
 }
 
+
 //EnemyBullet class
 void EnemyBullet::Draw()
 {
@@ -46,6 +47,7 @@ EnemyBullet::EnemyBullet(Vector2 newCoords)
 	coords = newCoords;
 }
 // Might add variants for different speeds and bullet sizes.
+
 
 // EnemyUFO class
 void EnemyUFO::Draw(Texture2D *sprites, bool debug)
@@ -98,6 +100,7 @@ EnemyUFO::EnemyUFO(float newX, float newY)
 	coords.y = newY;
 }
 
+
 // Class EnemyAimedProjectile
 bool EnemyAimedProjectile::CollissionCheck(Rectangle player)
 {
@@ -120,6 +123,7 @@ EnemyAimedProjectile::EnemyAimedProjectile(Vector2 source, Vector2 player)
 	target = player;
 	coords = source;
 }
+
 
 // Class EnemySpaceship
 void EnemySpaceship::ChangeSprite(float deltaTime)

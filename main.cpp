@@ -421,7 +421,6 @@ int main(void)
 					eSpaceships.erase(es_it++);
 				else es_it++;
 			}
-
 			std::list<Meteoroid>::iterator meteor_it;
 			for (meteor_it = meteoroids.begin(); meteor_it != meteoroids.end(); ) {
 				meteor_it->Move(deltaTime);
