@@ -106,7 +106,7 @@ bool EnemyAimedProjectile::CollissionCheck(Rectangle player)
 
 void EnemyAimedProjectile::Move(float deltaTime)
 {
-	Vector2MoveTowards(coords, target, speed * deltaTime);
+	coords = Vector2MoveTowards(coords, target, speed * deltaTime);
 }
 
 void EnemyAimedProjectile::Draw(Texture2D sprite, bool debug)
@@ -118,6 +118,7 @@ void EnemyAimedProjectile::Draw(Texture2D sprite, bool debug)
 EnemyAimedProjectile::EnemyAimedProjectile(Vector2 source, Vector2 player)
 {
 	target = player;
+	coords = source;
 }
 
 // Class EnemySpaceship

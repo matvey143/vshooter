@@ -500,6 +500,8 @@ int main(void)
 				saucers.clear();
 				player.bullets.clear();
 				explosions.clear();
+				eaProjectiles.clear();
+				eSpaceships.clear();
 			}
 			if (highScore <= score) highScore = score;
 			char scoreString[13];

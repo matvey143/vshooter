@@ -77,7 +77,7 @@ class EnemySpaceship {
 private:
 	int currentFrame = 0;
 	float frameTime = 0.0f;
-	float speed = 100.0f;
+	float speed = 30.0f;
 	float shootTime = 0.0f;
 	float shootCooldown = 0.5f;
 	float hitTime = 0.0f;
