@@ -257,6 +257,8 @@ int main(void)
 	constexpr int padding = 40;
 	RenderTexture camTexture = LoadRenderTexture(cameraX, cameraY);
 
+	Texture2D uiTexture = LoadTexture("graphics/metal.png");
+
 	Font titleFont = LoadFont("titlefont.fnt");
 	Font scoreFont = LoadFontEx("fantasque.ttf", 32, NULL, 0xFFFF);
 	Vector2 scoreSize = MeasureTextEx(scoreFont, "000000000000", 32.0, 0.0);
@@ -545,7 +547,7 @@ int main(void)
 			{
 				ClearBackground(WHITE);
 				// Background
-				DrawRectangleGradientV(0, 0, 640, 480, RED, PINK);
+				DrawTexture(uiTexture, 0, 0, WHITE);
 				// Title
 				DrawTextEx(titleFont, "VShooter", {padding * 3 + cameraX, padding}, 42.0, 0.0, WHITE);
 				// Game screen
@@ -576,6 +578,7 @@ int main(void)
 	UnloadFont(scoreFont);
 	UnloadFont(titleFont);
 	UnloadTexture(eprojectileSprite);
+	UnloadTexture(uiTexture);
 	for (int i = 0; i < sizeof espacehipSprites / sizeof espacehipSprites[0]; i++)
 		UnloadTexture(espacehipSprites[i]);
 	UnloadTexture(meteoroidSprite);
