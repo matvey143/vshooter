@@ -175,11 +175,11 @@ bool EnemySpaceship::CollisionCheck(Rectangle player)
 void EnemySpaceship::Draw(Texture2D *sprites, bool debug)
 {
 	if (isHit) {
-		DrawTexture(sprites[currentFrame] , coords.x - 16.0f, coords.y - 16.0f, RED);
+		DrawTexture(sprites[currentFrame], coords.x - 16.0f, coords.y - 16.0f, RED);
 		if (debug) DrawCircleV(coords, 8.0f, HITBOX_COLOR_ALT);
 	}
 	else {
-		DrawTexture(sprites[currentFrame] , coords.x - 16.0f, coords.y - 16.0f, WHITE);
+		DrawTexture(sprites[currentFrame], coords.x - 16.0f, coords.y - 16.0f, WHITE);
 		if (debug) DrawCircleV(coords, 8.0f, HITBOX_COLOR);
 	}
 }
