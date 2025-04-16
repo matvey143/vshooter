@@ -332,8 +332,9 @@ int main(void)
 		}
 	}
 
+	InitAudioDevice();
 	// Blaster sound.
-	Sound blaster = LoadSound("blaster.mp3");
+	Sound blaster = LoadSound("blaster.ogg");
 
 	SetTargetFPS(60);
 	while (!WindowShouldClose()) {
@@ -606,6 +607,9 @@ int main(void)
 	for (int i = 0; i < explosionSpritesAmount; i++)
 		UnloadTexture(explosionSprites[i]);
 	UnloadRenderTexture(camTexture);
+	UnloadSound(blaster);
+
+	CloseAudioDevice();
 	CloseWindow();
 	return 0;
 }
