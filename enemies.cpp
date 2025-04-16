@@ -48,7 +48,6 @@ EnemyBullet::EnemyBullet(Vector2 newCoords)
 }
 // Might add variants for different speeds and bullet sizes.
 
-
 // EnemyUFO class
 void EnemyUFO::Draw(Texture2D *sprites, bool debug)
 {
@@ -71,11 +70,12 @@ void EnemyUFO::ChangeSprite(float deltaTime)
 		spriteTime = 0.0f;
 	}
 }
-void EnemyUFO::Shoot(float deltaTime, std::list<EnemyBullet> &enemyBullets)
+void EnemyUFO::Shoot(float deltaTime, std::list<EnemyBullet> &enemyBullets, Sound blaster)
 {
 	if (shootTime >= shootCooldown) {
 		shootTime = 0.0f;
 		enemyBullets.emplace_back((Vector2){coords.x + hitbox.width / 2.0f, coords.y});
+		PlaySound(blaster);
 	}
 	else shootTime += deltaTime;
 }
@@ -141,12 +141,13 @@ void EnemySpaceship::Move(float deltaTime)
 	coords.y -= speed * deltaTime;
 }
 
-void EnemySpaceship::Shoot(Vector2 playerXY, float deltaTime, std::list<EnemyAimedProjectile> &eaProjectiles)
+void EnemySpaceship::Shoot(Vector2 playerXY, float deltaTime, std::list<EnemyAimedProjectile> &eaProjectiles, Sound blaster)
 {
 	shootTime += deltaTime;
 	if (shootTime >= shootCooldown) {
 		shootTime = 0.0f;
 		eaProjectiles.emplace_back(coords, playerXY);
+		PlaySound(blaster);
 	}
 }
 

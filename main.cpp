@@ -129,7 +129,7 @@ public:
 		hitbox.x = coords.x + xOffset;
 		hitbox.y = coords.y + yOffset; 
 	}
-	void Fire(float deltaTime, uint64_t &score)
+	void Fire(float deltaTime, uint64_t &score, Sound blaster)
 	{
 		if (IsKeyDown(KEY_Z) && shootCooldown <= 0.0f) {
 			// Limits playe to only 4 shots per second.
@@ -138,6 +138,7 @@ public:
 			bullets.emplace_back((Vector2) {hitbox.x + (hitbox.width / 2.0f), hitbox.y});
 			// Punishing player for spamming shot button
 			if(score > 0) score -= 1;
+			PlaySound(blaster);
 		}
 		else {
 			if (shootCooldown > 0.0f) shootCooldown -= deltaTime;
@@ -331,6 +332,9 @@ int main(void)
 		}
 	}
 
+	// Blaster sound.
+	Sound blaster = LoadSound("blaster.mp3");
+
 	SetTargetFPS(60);
 	while (!WindowShouldClose()) {
 		if (mainMenu) {
@@ -353,7 +357,7 @@ int main(void)
 			player.ChangeSprite(deltaTime);
 			// Player movement, restricted by borders of screen
 			player.Move(deltaTime);
-			player.Fire(deltaTime, score);
+			player.Fire(deltaTime, score, blaster);
 			// Moving bullets. They are removed if they move outside window.
 			player.MoveAllBullets(deltaTime);
 		
@@ -393,7 +397,7 @@ int main(void)
 					saucers.erase(ufo_it++);
 					continue;
 				}
-				ufo_it->Shoot(deltaTime, enemyBullets);
+				ufo_it->Shoot(deltaTime, enemyBullets, blaster);
 				ufo_it->ChangeSprite(deltaTime);
 				if (ufo_it->hitbox.y + ufo_it->hitbox.height <= 0.0f) saucers.erase(ufo_it++);
 				else ufo_it++;
@@ -430,7 +434,7 @@ int main(void)
 					continue;
 				}
 				es_it->WaitHit(deltaTime);
-				es_it->Shoot(Vector2Lerp(es_it->coords, player.coords, 1000.0f), deltaTime, eaProjectiles);
+				es_it->Shoot(Vector2Lerp(es_it->coords, player.coords, 1000.0f), deltaTime, eaProjectiles, blaster);
 				es_it->Move(deltaTime);
 				es_it->ChangeSprite(deltaTime);
 				if (!CheckCollisionCircleRec(es_it->coords, es_it->radius, (Rectangle) {0.0f, 0.0f, cameraX, cameraY}))
