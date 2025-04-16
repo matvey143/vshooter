@@ -317,6 +317,20 @@ int main(void)
 	constexpr int explosionSpritesAmount = sizeof explosionSprites / sizeof explosionSprites[0];
 	std::list<Explosion> explosions;
 
+	// To make stars more spread out
+	std::list<BgStar>::iterator it;
+	for (int i = 0; i < 1000; i++) {
+		if (i % 5 == 0) stars.emplace_back();
+		for (it = stars.begin(); it != stars.end(); ) {
+			for (it = stars.begin(); it != stars.end(); ) {
+				it->Move(0.1f);
+				if (it->coords.y <= 0.0f)
+					stars.erase(it++);
+				else it++;
+			}
+		}
+	}
+
 	SetTargetFPS(60);
 	while (!WindowShouldClose()) {
 		if (mainMenu) {
@@ -461,7 +475,6 @@ int main(void)
 				bgStarCooldown = 0.0f;
 			}
 			else bgStarCooldown += deltaTime;
-			std::list<BgStar>::iterator it;
 			for (it = stars.begin(); it != stars.end(); ) {
 				it->Move(deltaTime);
 				if (it->coords.y <= 0.0f)
