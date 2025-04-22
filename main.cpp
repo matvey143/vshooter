@@ -396,6 +396,7 @@ int main(void)
 					explosions.emplace_back(ufo_it->coords);
 					if (score < maxScore - 200) score += 200;
 					else score = maxScore;
+					PlaySound(explosionSFX);
 					saucers.erase(ufo_it++);
 					continue;
 				}
@@ -416,7 +417,7 @@ int main(void)
 					};
 					if (es_it->CollisionCheck(pbulletHitbox) && !es_it->isHit) {
 						if (es_it->lives > 0) {
-							es_it->Hit();
+							es_it->Hit(explosionSFX);
 							player.bullets.erase(pbullets_it++);
 							break;
 						}
@@ -469,6 +470,7 @@ int main(void)
 					explosions.emplace_back(temp);
 					if (score < maxScore - 100) score += 100;
 					else score = maxScore;
+					PlaySound(explosionSFX);
 					meteoroids.erase(meteor_it++);
 					continue;
 				}

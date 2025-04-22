@@ -159,7 +159,7 @@ void EnemySpaceship::WaitHit(float deltaTime)
 	}
 }
 
-void EnemySpaceship::Hit()
+void EnemySpaceship::Hit(Sound sfx)
 {
 	if (!isHit) {
 		isHit = true;
