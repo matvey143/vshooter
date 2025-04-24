@@ -169,8 +169,9 @@ public:
 			hitInvulTime = 0.0f;
 		}
 	}
-	void Hit()
+	void Hit(Sound sfx)
 	{
+		PlaySound(sfx);
 		lives--;
 		isHit = true;
 	}
@@ -378,7 +379,7 @@ int main(void)
 			std::list<EnemyUFO>::iterator ufo_it;
 			for (ufo_it = saucers.begin(); ufo_it != saucers.end(); ) {
 				ufo_it->Move(deltaTime);
-				if (ufo_it->CollisionCheck(player.hitbox) && !player.isHit) player.Hit();
+				if (ufo_it->CollisionCheck(player.hitbox) && !player.isHit) player.Hit(hitSFX);
 				// Collision checks for player's bullets.
 				for (pbullets_it = player.bullets.begin(); pbullets_it != player.bullets.end(); pbullets_it++) {
 					Rectangle pbulletHitbox = (Rectangle) {
@@ -449,7 +450,7 @@ int main(void)
 			std::list<Meteoroid>::iterator meteor_it;
 			for (meteor_it = meteoroids.begin(); meteor_it != meteoroids.end(); ) {
 				meteor_it->Move(deltaTime);
-				if (meteor_it->CollisionCheck(player.hitbox) && !player.isHit) player.Hit();
+				if (meteor_it->CollisionCheck(player.hitbox) && !player.isHit) player.Hit(hitSFX);
 				// Player bullet collsion checks.
 				for (pbullets_it = player.bullets.begin(); pbullets_it != player.bullets.end(); pbullets_it++) {
 					Rectangle pbulletHitbox = (Rectangle) {
@@ -494,7 +495,7 @@ int main(void)
 			std::list<EnemyBullet>::iterator ebullets_it;
 			for (ebullets_it = enemyBullets.begin(); ebullets_it != enemyBullets.end(); ) {
 				ebullets_it->Move(deltaTime);
-				if (ebullets_it->CollisionCheck(player.hitbox) && !player.isHit) player.Hit();
+				if (ebullets_it->CollisionCheck(player.hitbox) && !player.isHit) player.Hit(hitSFX);
 				if (ebullets_it->coords.y + ebullets_it->size.y <= 0.0f)
 					enemyBullets.erase(ebullets_it++);
 				else ebullets_it++;
@@ -502,7 +503,7 @@ int main(void)
 			std::list<EnemyAimedProjectile>::iterator eap_it;
 			for (eap_it = eaProjectiles.begin(); eap_it != eaProjectiles.end(); ) {
 				eap_it->Move(deltaTime);
-				if (eap_it->CollissionCheck(player.hitbox) && !player.isHit) player.Hit();
+				if (eap_it->CollissionCheck(player.hitbox) && !player.isHit) player.Hit(hitSFX);
 				if (!CheckCollisionCircleRec(eap_it->coords, eap_it->radius, {0.0f, 0.0f, cameraX, cameraY}))
 					eaProjectiles.erase(eap_it++);
 				else eap_it++;
