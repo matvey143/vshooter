@@ -92,7 +92,7 @@ public:
 	void ChangeSprite(float deltaTime);
 	void Shoot(Vector2 playerXY, float deltaTime, std::list<EnemyAimedProjectile> &eaProjectiles, Sound blaster);
 	void Move(float deltaTime);
-	void Hit();
+	void Hit(Sound sfx);
 	void WaitHit(float deltaTime);
 	EnemySpaceship(float newX, float newY);
 };

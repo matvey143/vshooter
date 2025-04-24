@@ -419,7 +419,7 @@ int main(void)
 					};
 					if (es_it->CollisionCheck(pbulletHitbox) && !es_it->isHit) {
 						if (es_it->lives > 0) {
-							es_it->Hit();
+							es_it->Hit(hitSFX);
 							player.bullets.erase(pbullets_it++);
 							break;
 						}
