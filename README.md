@@ -19,6 +19,7 @@ High score is not saved on hard drive, it only exists only while program is beig
 * https://www.freepik.com/free-photo/grunge-wall-texture_988115.htm#fromView=keyword&page=1&position=0&uuid=23636918-ae8e-409d-8be9-db0c4bff9f2d&query=Metal+Texture - metal texture;
 * Fonts Fantasque Sans Mono, Ume Font Gothic;
 * Sound effects: mixkit.co, myinstants.com;
+
 ## На русском
 ### Введение.
 Простая аркадная игра созданная при помощи библиотеки Raylib. Вашей целю является выживание и набор максимально возможного количества очков.

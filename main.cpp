@@ -140,9 +140,7 @@ public:
 			if(score > 0) score -= 1;
 			PlaySound(blaster);
 		}
-		else {
-			if (shootCooldown > 0.0f) shootCooldown -= deltaTime;
-		}
+		else if (shootCooldown > 0.0f) shootCooldown -= deltaTime;
 	}
 	void MoveAllBullets(float deltaTime)
 	{

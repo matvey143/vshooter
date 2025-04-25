@@ -8,9 +8,7 @@
 void Meteoroid::Draw(Texture2D texture, bool debug)
 {
 	DrawTexture(texture, coords.x - radius, coords.y - radius, WHITE);
-	if (debug) {
-		DrawCircleV(coords, radius, HITBOX_COLOR);
-	}
+	if (debug) DrawCircleV(coords, radius, HITBOX_COLOR);
 }
 void Meteoroid::Move(float deltaTime)
 {
@@ -27,7 +25,6 @@ Meteoroid::Meteoroid(Vector2 coordsNew, float hSpeedNew, float vSpeedNew)
 	vSpeed = vSpeedNew;
 	hSpeed = hSpeedNew;
 }
-
 
 //EnemyBullet class
 void EnemyBullet::Draw()
@@ -100,30 +97,25 @@ EnemyUFO::EnemyUFO(float newX, float newY)
 	coords.y = newY;
 }
 
-
 // Class EnemyAimedProjectile
 bool EnemyAimedProjectile::CollissionCheck(Rectangle player)
 {
 	return CheckCollisionCircleRec({coords.x + radius, coords.y + radius}, radius, player);
 }
-
 void EnemyAimedProjectile::Move(float deltaTime)
 {
 	coords = Vector2MoveTowards(coords, target, speed * deltaTime);
 }
-
 void EnemyAimedProjectile::Draw(Texture2D sprite, bool debug)
 {
 	DrawTexture(sprite, coords.x - radius, coords.y - radius, WHITE);
 	if (debug) DrawCircleV(coords, radius, HITBOX_COLOR_ALT);
 }
-
 EnemyAimedProjectile::EnemyAimedProjectile(Vector2 source, Vector2 player)
 {
 	target = player;
 	coords = source;
 }
-
 
 // Class EnemySpaceship
 void EnemySpaceship::ChangeSprite(float deltaTime)
@@ -135,12 +127,10 @@ void EnemySpaceship::ChangeSprite(float deltaTime)
 		frameTime = 0.0f;
 	}
 }
-
 void EnemySpaceship::Move(float deltaTime)
 {
 	coords.y -= speed * deltaTime;
 }
-
 void EnemySpaceship::Shoot(Vector2 playerXY, float deltaTime, std::list<EnemyAimedProjectile> &eaProjectiles, Sound blaster)
 {
 	shootTime += deltaTime;
@@ -150,7 +140,6 @@ void EnemySpaceship::Shoot(Vector2 playerXY, float deltaTime, std::list<EnemyAim
 		PlaySound(blaster);
 	}
 }
-
 void EnemySpaceship::WaitHit(float deltaTime)
 {
 	if (isHit) {
@@ -158,7 +147,6 @@ void EnemySpaceship::WaitHit(float deltaTime)
 		if (hitTime <= 0.0f) isHit = false;
 	}
 }
-
 void EnemySpaceship::Hit(Sound sfx)
 {
 	PlaySound(sfx);
@@ -168,12 +156,10 @@ void EnemySpaceship::Hit(Sound sfx)
 		lives--;
 	}
 }
-
 bool EnemySpaceship::CollisionCheck(Rectangle player)
 {
 	return CheckCollisionCircleRec(coords, radius, player);
 }
-
 void EnemySpaceship::Draw(Texture2D *sprites, bool debug)
 {
 	if (isHit) {
@@ -185,7 +171,6 @@ void EnemySpaceship::Draw(Texture2D *sprites, bool debug)
 		if (debug) DrawCircleV(coords, 8.0f, HITBOX_COLOR);
 	}
 }
-
 EnemySpaceship::EnemySpaceship(float newX, float newY)
 {
 	coords.x = newX;
