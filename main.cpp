@@ -247,6 +247,7 @@ int main(void)
 	uint64_t score1up = score1up_original;
 	constexpr uint64_t maxScore = 999'999'999'999;
 	InitWindow(640, 480, "vshooter");
+	SetConfigFlags(FLAG_VSYNC_HINT);
 
 	Camera2D camera;
 	camera.target = {0.0, 0.0};
@@ -337,7 +338,6 @@ int main(void)
 	Sound explosionSFX = LoadSound("sfx/explosion.mp3");
 	Sound hitSFX = LoadSound("sfx/hit.ogg");
 
-	SetTargetFPS(60);
 	while (!WindowShouldClose()) {
 		if (mainMenu) {
 			Vector2 titleSize = MeasureTextEx(titleFont, "VShooter", 32.0f, 0.0f);
