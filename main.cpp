@@ -592,6 +592,7 @@ int main(void)
 						padding * 7 + padding * (i / 5), // Y. Row.
 						WHITE);
 				}
+				if (debug) DrawFPS(0, 0);
 			}
 			EndDrawing();
 		}
