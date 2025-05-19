@@ -246,8 +246,8 @@ int main(void)
 	constexpr uint64_t score1up_original = 1'000;
 	uint64_t score1up = score1up_original;
 	constexpr uint64_t maxScore = 999'999'999'999;
-	InitWindow(640, 480, "vshooter");
 	SetConfigFlags(FLAG_VSYNC_HINT);
+	InitWindow(640, 480, "vshooter");
 
 	Camera2D camera;
 	camera.target = {0.0, 0.0};
