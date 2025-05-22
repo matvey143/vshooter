@@ -1,6 +1,6 @@
 #include "raylib.h"
 #include <list>
-#include "globalVariables.hpp"
+#include "globalConstants.hpp"
 #include "enemies.hpp"
 #include "raymath.h"
 

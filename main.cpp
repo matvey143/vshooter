@@ -5,7 +5,7 @@
 #include <random>
 // Custom header files start here.
 #include "enemies.hpp"
-#include "globalVariables.hpp"
+#include "globalConstants.hpp"
 
 constexpr auto cameraX = 300, cameraY = 400;
 unsigned long seconds = 0;
