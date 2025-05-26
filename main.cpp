@@ -98,6 +98,7 @@ public:
 		seconds = 0;
 		lives = livesStart;
 		secondFraction = 0.0f;
+		isHit = false;
 		coords = {150.0f, 50.0f};
 	}
 	void ChangeSprite(float deltaTime)
