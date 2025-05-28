@@ -133,7 +133,7 @@ public:
 	void Fire(float deltaTime, uint64_t &score, Sound blaster)
 	{
 		if (IsKeyDown(KEY_Z) && shootCooldown <= 0.0f) {
-			// Limits playe to only 4 shots per second.
+			// Limits player to only 4 shots per second.
 			shootCooldown = 0.25f;
 			// Construct class member at the end of list.
 			bullets.emplace_back((Vector2) {hitbox.x + (hitbox.width / 2.0f), hitbox.y});
